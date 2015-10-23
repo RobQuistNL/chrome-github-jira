@@ -13,6 +13,14 @@
         "chrome_style": true
     },
 
+    "icons": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png",
+        "256": "images/icon256.png",
+        "512": "images/icon512.png"
+    },
+
     "web_accessible_resources": [
         "images/jira.png"
     ],
