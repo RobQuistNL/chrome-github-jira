@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "GitHub Jira Integration",
-    "version": "1.0",
+    "version": "1.0.1",
 
     "description": "This extension shows contents of linked tasks from Jira in Github",
 
@@ -11,6 +11,14 @@
     "options_ui": {
         "page": "src/options.html",
         "chrome_style": true
+    },
+
+    "icons": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png",
+        "256": "images/icon256.png",
+        "512": "images/icon512.png"
     },
 
     "web_accessible_resources": [
@@ -27,9 +35,6 @@
 
     "permissions": [
         "activeTab",
-        "https://ajax.googleapis.com/",
-        "declarativeContent",
-        "*://*.atlassian.net/",
         "storage"
     ]
 }
