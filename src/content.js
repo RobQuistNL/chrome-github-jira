@@ -2,10 +2,34 @@
 var lastRefresh = (new Date()).getTime();
 var jiraLogo = chrome.extension.getURL("images/jira.png");
 var jiraUrl = undefined;
+var prTemplate = '';
+var NL = "\r";
 chrome.storage.sync.get({
-    jiraUrl: ''
+    jiraUrl: '',
+    prTemplate: '### Ticket' + NL +
+        'Link to ticket: {{TICKETURL}}' + NL +
+        NL +
+        //'#### Description' +  NL +
+        //'{{DESCRIPTION}}' + NL +
+        //NL +
+        '### What has been done' +  NL +
+        '- ' +  NL +
+        '- ' +  NL +
+        NL +
+        '### How to test' +  NL +
+        '- ' +  NL +
+        '- ' +  NL +
+        NL +
+        '### Todo' +  NL +
+        '- [ ] ' +  NL +
+        '- [ ] ' +  NL +
+        NL +
+        '### Notes' +  NL +
+        '- ' +  NL +
+        '- '
 }, function(items) {
     jiraUrl = items.jiraUrl;
+    prTemplate = items.prTemplate;
     if (jiraUrl == '') {
         console.error('GitHub Jira plugin could not load: Jira URL is not set.');
         return;
@@ -41,11 +65,16 @@ function checkPage() {
     if (url.match(/github\.com\/(.*)\/(.*)\/pulls/) != null) {
         //console.log('PR Overview page');
     }
+
+    if (url.match(/github\.com\/(.*)\/(.*)\/compare\/(.*)/) != null) {
+        //Create PR page
+        setTimeout(function() {handlePrCreatePage()}, 200); //Small timeout for dom to finish setup
+    }
 }
 
 function handlePrPage() {
     var title = $("h1 > span.js-issue-title").html();
-    if (title == undefined || $('#insertedJiraData').length > 0) {
+    if (title == undefined || $('a[data-container-id="jira_bucket"]').length > 0) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
     }
@@ -67,13 +96,13 @@ function handlePrPage() {
     );
 
     //Add another tab for directly viewing the ticket information
-    $('nav.tabnav-tabs').append(
+    $('div.tabnav.tabnav-pr nav.tabnav-tabs').append(
         '<a href="'+ticketUrl+'" data-container-id="jira_bucket" data-tab="jira" class="tabnav-tab js-pull-request-tab">'+
             '<span class="octicon octicon-credit-card"></span> Jira' +
             '<span id="files_tab_counter" class="counter">' +
-                '0' +
+            '0' +
             '</span>' +
-        '</a>'
+            '</a>'
     );
 
     // The tab view
@@ -159,4 +188,45 @@ function handlePrPage() {
             );
         }
     });
+}
+
+function handlePrCreatePage() {
+    var body = $("textarea#pull_request_body");
+    if (body.attr('jira-loading') == 1) {
+        return false; //Already loading
+    }
+    body.attr('jira-loading', 1);
+
+    var title = $('div.commitish-suggester > button[aria-label="Choose a head branch"] > span.js-select-button').html();
+    var ticketUrl = '**No linked ticket**';
+    var ticketDescription = '...';
+
+    if (title != undefined) {
+        //Found a title, fetch some info from the ticket
+        var ticketNumber = title.match(/([a-zA-Z]+-[0-9]+)/)[0];
+        ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
+
+        //Load up data from jira
+        $.ajax({
+            url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
+            dataType: "json",
+            async: false,
+            success: function(result) {
+                console.log(result);
+                $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
+                /*ticketDescription = result.fields.description
+                    .replace('h1.', '# ')
+                    .replace('h2.', '## ')
+                    .replace('h3.', '### ')
+                    .replace('h4.', '#### ')
+                    .replace('h5.', '##### ')
+                    .replace('h6.', '###### ')
+                    .replace('{code}', '```' + NL)
+                    .replace('{{', '``')
+                    .replace('}}', '``');*/
+            }
+        });
+    }
+
+    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription));
 }
