@@ -45,7 +45,7 @@ function checkPage() {
 
 function handlePrPage() {
     var title = $("h1 > span.js-issue-title").html();
-    if (title == undefined || $('#insertedJiraData').length > 0) {
+    if (title == undefined || $('a[data-container-id="jira_bucket"]').length > 0) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
     }
@@ -67,7 +67,7 @@ function handlePrPage() {
     );
 
     //Add another tab for directly viewing the ticket information
-    $('nav.tabnav-tabs').append(
+    $('div.tabnav.tabnav-pr nav.tabnav-tabs').append(
         '<a href="'+ticketUrl+'" data-container-id="jira_bucket" data-tab="jira" class="tabnav-tab js-pull-request-tab">'+
             '<span class="octicon octicon-credit-card"></span> Jira' +
             '<span id="files_tab_counter" class="counter">' +
