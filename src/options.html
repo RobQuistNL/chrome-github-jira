@@ -3,7 +3,7 @@
 <head>
     <title>GitHub Jira integration plugin for Chrome</title>
     <style>
-        body: { padding: 10px; }
+        body: { padding: 10px; overflow:auto;}
     </style>
 </head>
 
@@ -13,7 +13,9 @@
     <br/><br/>
     <span id="status"></span><br/>
     <label for="jiraUrl">Jira URL (without scheme or slashes):</label>
-    <input type="url" id="jiraUrl"/>
+    <input type="url" id="jiraUrl"/><br/>
+    <label for="prTemplate">New PR template:</label>
+    <textarea style="width:300px; height:200px;" id="prTemplate"></textarea>
     <br /><br/>
     <button id="save">Save</button>
     <br />
