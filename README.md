@@ -14,3 +14,10 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - enable developer mode (right top)
 - Load unpacked extension
 - Select that folder
+
+
+### Changelog
+
+#### 1.0.4:
+- Removed console logs
+- Fixed Uncaught TypeError when no ticket number was found (#3)
