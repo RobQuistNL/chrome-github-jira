@@ -59,11 +59,10 @@ chrome.storage.sync.get({
 function checkPage() {
     var url = window.location.href;
     if (url.match(/github\.com\/(.*)\/(.*)\/pull\//) != null) {
-        //console.log('Specific PR page');
         setTimeout(function() {handlePrPage()}, 200); //Small timeout for dom to finish setup
     }
     if (url.match(/github\.com\/(.*)\/(.*)\/pulls/) != null) {
-        //console.log('PR Overview page');
+        //@todo PR overview page
     }
 
     if (url.match(/github\.com\/(.*)\/(.*)\/compare\/(.*)/) != null) {
@@ -124,7 +123,6 @@ function handlePrPage() {
         url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
         dataType: "json",
         success: function(result){
-            //console.log(result.fields.summary);
             $("#insertedJiraData").html(
                 '<div class="flex-table gh-header-meta">' +
                     '<div class="flex-table-item">' +
@@ -137,8 +135,6 @@ function handlePrPage() {
                     '</div>' +
                     '</div>'
             );
-
-            // console.log(result);
 
             var assignee = result.fields.assignee;
             var reporter = result.fields.reporter;
@@ -214,7 +210,6 @@ function handlePrCreatePage() {
                 dataType: "json",
                 async: false,
                 success: function(result) {
-                    // console.log(result);
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
                     /*ticketDescription = result.fields.description
                         .replace('h1.', '# ')
