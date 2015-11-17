@@ -138,7 +138,7 @@ function handlePrPage() {
                     '</div>'
             );
 
-            console.log(result);
+            // console.log(result);
 
             var assignee = result.fields.assignee;
             var reporter = result.fields.reporter;
@@ -202,30 +202,33 @@ function handlePrCreatePage() {
     var ticketDescription = '...';
 
     if (title != undefined) {
-        //Found a title, fetch some info from the ticket
-        var ticketNumber = title.match(/([a-zA-Z]+-[0-9]+)/)[0];
-        ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
+        var titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
+        if (titleMatch) {
+            //Found a title, fetch some info from the ticket
+            var ticketNumber = titleMatch[0];
+            ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
-        //Load up data from jira
-        $.ajax({
-            url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
-            dataType: "json",
-            async: false,
-            success: function(result) {
-                console.log(result);
-                $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
-                /*ticketDescription = result.fields.description
-                    .replace('h1.', '# ')
-                    .replace('h2.', '## ')
-                    .replace('h3.', '### ')
-                    .replace('h4.', '#### ')
-                    .replace('h5.', '##### ')
-                    .replace('h6.', '###### ')
-                    .replace('{code}', '```' + NL)
-                    .replace('{{', '``')
-                    .replace('}}', '``');*/
-            }
-        });
+            //Load up data from jira
+            $.ajax({
+                url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
+                dataType: "json",
+                async: false,
+                success: function(result) {
+                    // console.log(result);
+                    $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
+                    /*ticketDescription = result.fields.description
+                        .replace('h1.', '# ')
+                        .replace('h2.', '## ')
+                        .replace('h3.', '### ')
+                        .replace('h4.', '#### ')
+                        .replace('h5.', '##### ')
+                        .replace('h6.', '###### ')
+                        .replace('{code}', '```' + NL)
+                        .replace('{{', '``')
+                        .replace('}}', '``');*/
+                }
+            });
+        }
     }
 
     body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription));
