@@ -20,6 +20,9 @@ chrome.storage.sync.get({
         '- ' +  NL +
         '- ' +  NL +
         NL +
+        '### Acceptance criteria' +  NL +
+        '{{ACCEPTANCE}}' +
+        NL +
         '### Todo' +  NL +
         '- [ ] ' +  NL +
         '- [ ] ' +  NL +
@@ -196,6 +199,7 @@ function handlePrCreatePage() {
     var title = $('div.commitish-suggester > button[aria-label="Choose a head branch"] > span.js-select-button').html();
     var ticketUrl = '**No linked ticket**';
     var ticketDescription = '...';
+    var acceptanceList = '';
 
     if (title != undefined) {
         var titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
@@ -211,20 +215,21 @@ function handlePrCreatePage() {
                 async: false,
                 success: function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
-                    /*ticketDescription = result.fields.description
-                        .replace('h1.', '# ')
-                        .replace('h2.', '## ')
-                        .replace('h3.', '### ')
-                        .replace('h4.', '#### ')
-                        .replace('h5.', '##### ')
-                        .replace('h6.', '###### ')
-                        .replace('{code}', '```' + NL)
-                        .replace('{{', '``')
-                        .replace('}}', '``');*/
+
+                    var startString = 'h3. Acceptatiecriteria';
+                    var endString  = 'h3.';
+                    
+                    description = result.fields.description;
+                    
+                    description = description.substr(description.indexOf(startString), description.length);
+                    description = description.substr(0, description.indexOf(endString));
+                    description = description.substr(startString.length, description.length);
+
+                    acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
                 }
             });
         }
     }
 
-    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription));
+    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription).replace('{{ACCEPTANCE}}', acceptanceList));
 }

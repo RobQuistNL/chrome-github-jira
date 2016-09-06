@@ -16,6 +16,9 @@ function loadOptions() {
             '- ' +  NL +
             '- ' +  NL +
             NL +
+            '### Acceptance criteria' +  NL +
+            '{{ACCEPTANCE}}' +
+            NL +
             '### Todo' +  NL +
             '- [ ] ' +  NL +
             '- [ ] ' +  NL +
