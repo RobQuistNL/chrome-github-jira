@@ -2,6 +2,8 @@
 var lastRefresh = (new Date()).getTime();
 var jiraLogo = chrome.extension.getURL("images/jira.png");
 var jiraUrl = undefined;
+var acceptanceStartString = 'h3. Acceptatiecriteria';
+var acceptanceEndString  = 'h3.';
 var prTemplate = '';
 var NL = "\r";
 chrome.storage.sync.get({
@@ -32,6 +34,8 @@ chrome.storage.sync.get({
         '- '
 }, function(items) {
     jiraUrl = items.jiraUrl;
+    acceptanceStartString = items.acceptanceStartString;
+    acceptanceEndString = items.acceptanceEndString;
     prTemplate = items.prTemplate;
     if (jiraUrl == '') {
         console.error('GitHub Jira plugin could not load: Jira URL is not set.');
@@ -216,14 +220,11 @@ function handlePrCreatePage() {
                 success: function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
 
-                    var startString = 'h3. Acceptatiecriteria';
-                    var endString  = 'h3.';
-                    
                     description = result.fields.description;
                     
-                    description = description.substr(description.indexOf(startString), description.length);
-                    description = description.substr(0, description.indexOf(endString));
-                    description = description.substr(startString.length, description.length);
+                    description = description.substr(description.indexOf(acceptanceStartString), description.length);
+                    description = description.substr(0, description.indexOf(acceptanceEndString));
+                    description = description.substr(acceptanceEndString.length, description.length);
 
                     acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
                 }
