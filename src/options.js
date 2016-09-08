@@ -3,7 +3,7 @@ function loadOptions() {
     chrome.storage.sync.get({
         jiraUrl: '',
         acceptanceStartString: 'h3. Acceptatiecriteria',
-        acceptanceEndString: 'h3.',
+        acceptanceEndString: 'h3. Notities',
         prTemplate: '### Ticket' + NL +
             'Link to ticket: {{TICKETURL}}' + NL +
             NL +

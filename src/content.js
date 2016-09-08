@@ -3,11 +3,13 @@ var lastRefresh = (new Date()).getTime();
 var jiraLogo = chrome.extension.getURL("images/jira.png");
 var jiraUrl = undefined;
 var acceptanceStartString = 'h3. Acceptatiecriteria';
-var acceptanceEndString  = 'h3.';
+var acceptanceEndString  = 'h3. Notities';
 var prTemplate = '';
 var NL = "\r";
 chrome.storage.sync.get({
     jiraUrl: '',
+    acceptanceStartString: 'h3. Acceptatiecriteria',
+    acceptanceEndString: 'h3. Notities',
     prTemplate: '### Ticket' + NL +
         'Link to ticket: {{TICKETURL}}' + NL +
         NL +
@@ -224,7 +226,7 @@ function handlePrCreatePage() {
                     
                     description = description.substr(description.indexOf(acceptanceStartString), description.length);
                     description = description.substr(0, description.indexOf(acceptanceEndString));
-                    description = description.substr(acceptanceEndString.length, description.length);
+                    description = description.substr(acceptanceStartString.length, description.length - acceptanceEndString.length);
 
                     acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
                 }
