@@ -222,13 +222,15 @@ function handlePrCreatePage() {
                 success: function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
 
-                    description = result.fields.description;
-                    
-                    description = description.substr(description.indexOf(acceptanceStartString), description.length);
-                    description = description.substr(0, description.indexOf(acceptanceEndString));
-                    description = description.substr(acceptanceStartString.length, description.length - acceptanceEndString.length);
+                    var description = result.fields.description;
 
-                    acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
+                    if(typeof description == 'string' || description instanceof String) {
+                        description = description.substr(description.indexOf(acceptanceStartString), description.length);
+                        description = description.substr(0, description.indexOf(acceptanceEndString));
+                        description = description.substr(acceptanceStartString.length, description.length - acceptanceEndString.length);
+
+                        acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
+                    }
                 }
             });
         }
