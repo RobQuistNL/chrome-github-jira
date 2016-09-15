@@ -18,7 +18,8 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
-#### 1.0.5
+#### 1.1.0
+- Added possibility to filter acceptance criteria from the ticket and parse it into the PR using the template.
 
 #### 1.0.4:
 - Removed console logs
