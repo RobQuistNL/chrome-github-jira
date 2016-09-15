@@ -14,13 +14,19 @@
     <span id="status"></span><br/>
     <label for="jiraUrl">Jira URL (without scheme or slashes):</label>
     <input type="url" id="jiraUrl"/><br/>
+    <label for="acceptanceStartString">Acceptance criteria start string</label>
+    <input type="text" id="acceptanceStartString"/><br/>
+    <label for="acceptanceEndString">Acceptance criteria end string</label>
+    <input type="text" id="acceptanceEndString"/><br/>
     <label for="prTemplate">New PR template:</label>
     <textarea style="width:300px; height:200px;" id="prTemplate"></textarea>
     <br /><br/>
     <button id="save">Save</button>
     <br />
     <button id="clear">Clear storage</button>
-
+    <p>It's possible to show the acceptance criteria from your issues in your PR. You need to place the following tag in your template:</p>
+    <p>### Acceptance criteria<br>{{ACCEPTANCE}}</p>
+    
     <a target="_blank" href="https://github.com/RobQuistNL/chrome-github-jira">
         <img
             style="position: absolute; top: 0; right: 0; border: 0;"

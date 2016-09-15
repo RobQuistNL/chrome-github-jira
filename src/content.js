@@ -2,10 +2,14 @@
 var lastRefresh = (new Date()).getTime();
 var jiraLogo = chrome.extension.getURL("images/jira.png");
 var jiraUrl = undefined;
+var acceptanceStartString = 'h3. Acceptatiecriteria';
+var acceptanceEndString  = 'h3. Notities';
 var prTemplate = '';
 var NL = "\r";
 chrome.storage.sync.get({
     jiraUrl: '',
+    acceptanceStartString: 'h3. Acceptatiecriteria',
+    acceptanceEndString: 'h3. Notities',
     prTemplate: '### Ticket' + NL +
         'Link to ticket: {{TICKETURL}}' + NL +
         NL +
@@ -20,6 +24,9 @@ chrome.storage.sync.get({
         '- ' +  NL +
         '- ' +  NL +
         NL +
+        '### Acceptance criteria' +  NL +
+        '{{ACCEPTANCE}}' +
+        NL +
         '### Todo' +  NL +
         '- [ ] ' +  NL +
         '- [ ] ' +  NL +
@@ -29,6 +36,8 @@ chrome.storage.sync.get({
         '- '
 }, function(items) {
     jiraUrl = items.jiraUrl;
+    acceptanceStartString = items.acceptanceStartString;
+    acceptanceEndString = items.acceptanceEndString;
     prTemplate = items.prTemplate;
     if (jiraUrl == '') {
         console.error('GitHub Jira plugin could not load: Jira URL is not set.');
@@ -196,6 +205,7 @@ function handlePrCreatePage() {
     var title = $('div.commitish-suggester > button[aria-label="Choose a head branch"] > span.js-select-button').html();
     var ticketUrl = '**No linked ticket**';
     var ticketDescription = '...';
+    var acceptanceList = '';
 
     if (title != undefined) {
         var titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
@@ -211,20 +221,20 @@ function handlePrCreatePage() {
                 async: false,
                 success: function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
-                    /*ticketDescription = result.fields.description
-                        .replace('h1.', '# ')
-                        .replace('h2.', '## ')
-                        .replace('h3.', '### ')
-                        .replace('h4.', '#### ')
-                        .replace('h5.', '##### ')
-                        .replace('h6.', '###### ')
-                        .replace('{code}', '```' + NL)
-                        .replace('{{', '``')
-                        .replace('}}', '``');*/
+
+                    var description = result.fields.description;
+
+                    if(typeof description == 'string' || description instanceof String) {
+                        description = description.substr(description.indexOf(acceptanceStartString), description.length);
+                        description = description.substr(0, description.indexOf(acceptanceEndString));
+                        description = description.substr(acceptanceStartString.length, description.length - acceptanceEndString.length);
+
+                        acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
+                    }
                 }
             });
         }
     }
 
-    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription));
+    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription).replace('{{ACCEPTANCE}}', acceptanceList));
 }

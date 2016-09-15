@@ -2,6 +2,8 @@ function loadOptions() {
     var NL = "\r";
     chrome.storage.sync.get({
         jiraUrl: '',
+        acceptanceStartString: 'h3. Acceptatiecriteria',
+        acceptanceEndString: 'h3. Notities',
         prTemplate: '### Ticket' + NL +
             'Link to ticket: {{TICKETURL}}' + NL +
             NL +
@@ -16,6 +18,9 @@ function loadOptions() {
             '- ' +  NL +
             '- ' +  NL +
             NL +
+            '### Acceptance criteria' +  NL +
+            '{{ACCEPTANCE}}' +
+            NL +
             '### Todo' +  NL +
             '- [ ] ' +  NL +
             '- [ ] ' +  NL +
@@ -25,6 +30,8 @@ function loadOptions() {
             '- '
     }, function(items) {
         document.getElementById('jiraUrl').value = items.jiraUrl;
+        document.getElementById('acceptanceStartString').value = items.acceptanceStartString;
+        document.getElementById('acceptanceEndString').value = items.acceptanceEndString;
         document.getElementById('prTemplate').value = items.prTemplate;
     });
 }
@@ -32,6 +39,8 @@ function loadOptions() {
 function saveOptions() {
     chrome.storage.sync.set({
         jiraUrl: document.getElementById("jiraUrl").value,
+        acceptanceStartString: document.getElementById("acceptanceStartString").value,
+        acceptanceEndString: document.getElementById("acceptanceEndString").value,
         prTemplate: document.getElementById("prTemplate").value
     }, function() {
         // Update status to let user know options were saved.
