@@ -51,8 +51,6 @@ chrome.storage.sync.get({
         return;
     }
 
-    console.log('Fun fact of the developer console nerd: You have logged in to Jira at least ' + loginResult.loginInfo.loginCount + ' times!');
-
     // Check page if content changed (for AJAX pages)
     $(document).on('DOMNodeInserted', function() {
         if ((new Date()).getTime() - lastRefresh >= 250) {
