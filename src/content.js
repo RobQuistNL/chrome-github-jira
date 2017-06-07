@@ -200,7 +200,7 @@ function handlePrCreatePage() {
     }
     body.attr('jira-loading', 1);
 
-    var title = $('div.commitish-suggester > button[aria-label="Choose a head branch"] > span.js-select-button').html();
+    var title = $('.range-cross-repo-pair .js-menu-target .css-truncate-target:eq(3)').html();
     var ticketUrl = '**No linked ticket**';
     var ticketDescription = '...';
     var acceptanceList = '';
