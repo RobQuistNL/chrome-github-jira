@@ -131,13 +131,13 @@ function handlePrPage() {
         dataType: "json",
         success: function(result){
             $("#insertedJiraData").html(
-                '<div class="flex-table gh-header-meta">' +
-                    '<div class="flex-table-item">' +
+                '<div class="TableObject gh-header-meta">' +
+                    '<div class="TableObject-item">' +
                     '<div class="state" style="background-color: rgb(150, 198, 222);">' +
                     '<span class="octicon"><img src="'+jiraLogo+'" /></span> Jira' +
                     '</div>' +
                     '</div>' +
-                    '<div class="flex-table-item flex-table-item-primary">' +
+                    '<div class="TableObject-item TableObject-item--primary">' +
                     result.fields.summary +
                     '</div>' +
                     '</div>'
