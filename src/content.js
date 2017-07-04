@@ -67,7 +67,7 @@ function checkPage() {
     var url = window.location.href;
     if (url.match(/github\.com\/(.*)\/(.*)\/pull\//) != null) {
         setTimeout(function() {
-	        handleCommitsTitle();
+            handleCommitsTitle();
             handlePrPage();
         }, 200); //Small timeout for dom to finish setup
     }
@@ -78,35 +78,35 @@ function checkPage() {
     if (url.match(/github\.com\/(.*)\/(.*)\/compare\/(.*)/) != null) {
         //Create PR page
         setTimeout(function() {
-	        handleCommitsTitle();
+            handleCommitsTitle();
             handlePrCreatePage();
         }, 200); //Small timeout for dom to finish setup
     }
 }
 
 function handleCommitsTitle() {
-	var baseTicketUrl = 'https://'+jiraUrl+'/browse/';
+    var baseTicketUrl = 'https://'+jiraUrl+'/browse/';
 
-	$(".commit-message code").each(function(index, item) {
-		var $item = $(item);
-		var $itemLink = $item.find('a');
-		var itemLinkHtml = $itemLink.html();
+    $(".commit-message code").each(function(index, item) {
+        var $item = $(item);
+        var $itemLink = $item.find('a');
+        var itemLinkHtml = $itemLink.html();
 
-	    if (!itemLinkHtml.match(/([A-Z]+-[0-9]+)/g)) {
-	        return;
+        if (!itemLinkHtml.match(/([A-Z]+-[0-9]+)/g)) {
+            return;
         }
 
-		var aHref = $itemLink.href;
-	    var splitedContent = itemLinkHtml.split(/([A-Z]+-[0-9]+)/g);
+        var aHref = $itemLink[0].href;
+        var splittedContent = itemLinkHtml.split(/([A-Z]+-[0-9]+)/g);
 
-		$item.html('');
-	    for(var i=0; i< splitedContent.length; i+=3) {
-			$item.append(
-				'<a href="'+aHref+'">'+splitedContent[0]+'</a>' +
-				'<a href="'+ baseTicketUrl + splitedContent[1] +'" target="_blank" alt="Ticket in Jira">'+ splitedContent[1] +'</a>' +
-				'<a href="'+aHref+'">'+splitedContent[2]+'</a>'
-			);
-	    }
+        $item.html('');
+        for(var i=0; i< splittedContent.length; i+=3) {
+            $item.append(
+                '<a href="'+aHref+'">'+splittedContent[0]+'</a>' +
+                '<a href="'+ baseTicketUrl + splittedContent[1] +'" target="_blank" alt="Ticket in Jira">'+ splittedContent[1] +'</a>' +
+                '<a href="'+aHref+'">'+splittedContent[2]+'</a>'
+            );
+        }
     });
 }
 
