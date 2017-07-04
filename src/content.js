@@ -105,14 +105,14 @@ function handlePrPage() {
     $('div.tabnav.tabnav-pr nav.tabnav-tabs').append(
         '<a href="'+ticketUrl+'" data-container-id="jira_bucket" data-tab="jira" class="tabnav-tab js-pull-request-tab">'+
             '<span class="octicon octicon-credit-card"></span> Jira' +
-            '<span id="files_tab_counter" class="counter">' +
+            '<span id="files_tab_counter" class="Counter"> ' +
             '0' +
             '</span>' +
             '</a>'
     );
 
     // The tab view
-    $('div.view-pull-request').append(
+    $('div.pull-request-tab-content').parent().append(
         '<div id="jira_bucket" class="jira-bucket tab-content pull-request-tab-content"></div>'
     );
 
