@@ -44,8 +44,8 @@ chrome.storage.sync.get({
         return;
     }
 
-    //Check login
-    var loginResult = $.ajax('https://' + jiraUrl + '/rest/auth/1/session', {async: false}).responseJSON;
+    var loginResult = $.ajax('https://' + jiraUrl + '/rest/auth/1/session', {xhrFields : { withCredentials : true}, async: false}).responseJSON;
+
     if (loginResult.name == undefined) {
         console.error('You are not logged in to Jira at http://'+jiraUrl+' - Please login.');
         return;
@@ -117,7 +117,13 @@ function handlePrPage() {
         return false;
     }
 
-    var ticketNumber = title.match(/([A-Z]+-[0-9]+)/)[0];
+    var match = title.match(/([A-Z]+-[0-9]+)/);
+
+    if (!match) {
+        return;
+    }
+
+    var ticketNumber = match[1];
     var ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
     //Replace title with clickable link to jira ticket
@@ -177,8 +183,8 @@ function handlePrPage() {
 
             var assignee = result.fields.assignee;
             var reporter = result.fields.reporter;
-            var assigneeImage = $.ajax(assignee.self, {async: false}).responseJSON.avatarUrls['48x48'];
-            var reporterImage = $.ajax(reporter.self, {async: false}).responseJSON.avatarUrls['48x48'];
+            var assigneeImage = $.ajax(assignee.self, {xhrFields : { withCredentials : true}, async: false}).responseJSON.avatarUrls['48x48'];
+            var reporterImage = $.ajax(reporter.self, {xhrFields : { withCredentials : true}, async: false}).responseJSON.avatarUrls['48x48'];
 
             var assigneeText = '<div class="discussion-timeline pull-discussion-timeline js-quote-selection-container ">' +
                 '<div class="js-discussion js-socket-channel">' +

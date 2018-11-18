@@ -15,6 +15,14 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - Load unpacked extension
 - Select that folder
 
+If you have issues when the extension is making ajax requests to the target jira instances, probably is because CORS.
+
+## Setup CORS locally (no need to configure JIRA whitelist)
+
+- Install the following extension: https://github.com/chrisdeely/ForceCORS
+- Add URL your target JIRA instance
+- Setup `Access-Control-Allow-Origin` as `chrome-extension://embimgihmeniilbhmbpldiffdcfadbec`
+- Setup `Access-Control-Allow-Credentials` as `true`
 
 ### Changelog
 
