@@ -6,7 +6,7 @@ function(request, sender, sendResponse) {
             url = 'https://' + request.jiraUrl + '/rest/auth/1/session';
             break;
         case 'getTicketInfo':
-            url = 'https://'+request.jiraUrl+'/browse/' + request.ticketNumber;
+            url = 'https://'+request.jiraUrl+'/rest/api/latest/issue/' + request.ticketNumber + '';
             break;
     }
 

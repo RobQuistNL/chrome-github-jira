@@ -231,7 +231,6 @@ function handlePrPage() {
 }
 
 function handlePrCreatePage() {
-    console.log('Handle PR page');
     var body = $("textarea#pull_request_body");
     if (body.attr('jira-loading') == 1) {
         return false; //Already loading
