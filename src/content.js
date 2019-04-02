@@ -1,11 +1,11 @@
 // The last time a refresh of the page was done
-var lastRefresh = (new Date()).getTime();
-var jiraLogo = chrome.extension.getURL("images/jira.png");
-var jiraUrl = undefined;
-var acceptanceStartString = 'h3. Acceptatiecriteria';
-var acceptanceEndString  = 'h3. Notities';
-var prTemplate = '';
-var NL = "\r";
+let lastRefresh = (new Date()).getTime();
+let jiraLogo = chrome.extension.getURL("images/jira.png");
+let jiraUrl = undefined;
+let acceptanceStartString = 'h3. Acceptatiecriteria';
+let acceptanceEndString  = 'h3. Notities';
+let prTemplate = '';
+let NL = "\r";
 chrome.storage.sync.get({
     jiraUrl: '',
     acceptanceStartString: 'h3. Acceptatiecriteria',
@@ -69,7 +69,7 @@ chrome.storage.sync.get({
 });
 
 function checkPage() {
-    var url = window.location.href;
+    let url = window.location.href;
     if (url.match(/github\.com\/(.*)\/(.*)\/pull\//) != null) {
         setTimeout(function() {
             handleCommitsTitle();
@@ -90,40 +90,45 @@ function checkPage() {
 }
 
 function handleCommitsTitle() {
-    var baseTicketUrl = 'https://'+jiraUrl+'/browse/';
+    let baseTicketUrl = 'https://'+jiraUrl+'/browse/';
 
     $(".commit-message code").each(function(index, item) {
-        var $item = $(item);
-        var $itemLink = $item.find('a');
-        var itemLinkHtml = $itemLink.html();
+        let $item = $(item);
+        let $itemLink = $item.find('a');
+        let itemLinkHtml = $itemLink.html();
 
         if (!itemLinkHtml.match(/([A-Z]+-[0-9]+)/g)) {
             return;
         }
 
-        var aHref = $itemLink[0].href;
-        var splittedContent = itemLinkHtml.split(/([A-Z]+-[0-9]+)/g);
+        let aHref = $itemLink[0].href;
+        let splittedContent = itemLinkHtml.split(/([A-Z]+-[0-9]+)/g);
 
         $item.html('');
         for(var i=0; i< splittedContent.length; i+=3) {
             $item.append(
                 '<a href="'+aHref+'">'+splittedContent[0]+'</a>' +
-                '<a href="'+ baseTicketUrl + splittedContent[1] +'" target="_blank" alt="Ticket in Jira">'+ splittedContent[1] +'</a>' +
-                '<a href="'+aHref+'">'+splittedContent[2]+'</a>'
+                '<a href="'+ baseTicketUrl + splittedContent[1] +'" target="_blank" alt="Ticket in Jira"><b>'+ splittedContent[1] +'</b></a>' +
+                ' <a href="'+aHref+'">'+splittedContent[2].trim()+'</a>'
             );
         }
     });
 }
 
 function handlePrPage() {
-    var title = $("h1 > span.js-issue-title").html();
-    if (title == undefined || $('a[data-container-id="jira_bucket"]').length > 0) {
+    let title = $("h1 > span.js-issue-title").html();
+    if (title == undefined || $('#insertedJiraData').length > 0) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
     }
 
-    var ticketNumber = title.match(/([A-Z]+-[0-9]+)/)[0];
-    var ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
+    let ticketNumber = title.match(/([A-Z]+-[0-9]+)/);
+    if (null == ticketNumber) {
+        //Title was found, but ticket number wasn't.
+        return false;
+    }
+    ticketNumber = ticketNumber[0];
+    let ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
     //Replace title with clickable link to jira ticket
     $("h1 > span.js-issue-title").html(
@@ -138,39 +143,15 @@ function handlePrPage() {
         '<div id="insertedJiraData">Loading ticket '+ticketNumber+'...</div>'
     );
 
-    //Add another tab for directly viewing the ticket information
-    $('div.tabnav.tabnav-pr nav.tabnav-tabs').append(
-        '<a href="'+ticketUrl+'" data-container-id="jira_bucket" data-tab="jira" class="tabnav-tab js-pull-request-tab">'+
-            '<span class="octicon octicon-credit-card"></span> Jira' +
-            '<span id="files_tab_counter" class="Counter"> ' +
-            '0' +
-            '</span>' +
-            '</a>'
-    );
-
-    // The tab view
-    $('div.pull-request-tab-content').parent().append(
-        '<div id="jira_bucket" class="jira-bucket tab-content pull-request-tab-content"></div>'
-    );
-
-    // Tab click handle
-    $('a[data-tab="jira"]').on('click', function() {
-        $('nav.tabnav-tabs a').removeClass('selected');
-        $(this).addClass('selected');
-        $('div.pull-request-tab-content').removeClass('is-visible');
-        $('div#jira_bucket').addClass('is-visible');
-        return false;
-    });
-
     //Load up data from jira
     chrome.runtime.sendMessage(
         {query: 'getTicketInfo', jiraUrl: jiraUrl, ticketNumber: ticketNumber},
         function(result) {
-            var assignee = result.fields.assignee;
-            var reporter = result.fields.reporter;
+            let assignee = result.fields.assignee;
+            let reporter = result.fields.reporter;
 
-            var assigneeImage = assignee.avatarUrls['48x48'];
-            var reporterImage = reporter.avatarUrls['48x48'];
+            let assigneeImage = assignee.avatarUrls['16x16'];
+            let reporterImage = reporter.avatarUrls['16x16'];
 
             $("#insertedJiraData").html(
                 '<div class="TableObject gh-header-meta">' +
@@ -187,76 +168,34 @@ function handlePrPage() {
                     '<div class="TableObject-item TableObject-item--primary">' +
                         '<b><a href="'+ticketUrl+'" target="_blank">['+ticketNumber+'] - '+result.fields.summary+'</a></b>' +
                         ' - Reported by ' +
-                        '<span class="author text-bold">'+assignee.displayName+'</span>' +
+                        '<span class="author text-bold"><img src="'+assigneeImage+'" width="16"/> '+assignee.displayName+'</span>' +
                         ' and assigned to ' +
-                        '<span class="author text-bold">'+reporter.displayName+'</span>' +
+                        '<span class="author text-bold"><img src="'+reporterImage+'" width="16"/> '+reporter.displayName+'</span>' +
                     '</div>' +
                 '</div>'
-            );
-
-            var assigneeText = '<div class="discussion-timeline pull-discussion-timeline js-quote-selection-container ">' +
-                '<div class="js-discussion js-socket-channel">' +
-                '<div class="timeline-comment-wrapper js-comment-container">' +
-                '<a href="#"><img alt="'+assignee.displayName+'" class="timeline-comment-avatar" height="48" src="'+assigneeImage+'" width="48"></a>' +
-                '<div class="comment previewable-edit timeline-comment js-comment js-task-list-container">' +
-                '<div class="timeline-comment-header ">' +
-                '<div class="timeline-comment-header-text">' +
-                '<strong><a href="#" class="author">'+assignee.displayName+'</a></strong>' +
-                ' is assigned to this task. Last update was ' +
-                '<a href="#" class="timestamp">' +
-                '<time datetime="'+result.fields.updated+'" is="relative-time" title="'+result.fields.updated+'">'+result.fields.updated+'</time>' +
-                '</a>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>';
-
-            var reporterText = '<div class="discussion-timeline pull-discussion-timeline js-quote-selection-container ">' +
-                '<div class="js-discussion js-socket-channel">' +
-                '<div class="timeline-comment-wrapper js-comment-container">' +
-                '<a href="#"><img alt="'+reporter.displayName+'" class="timeline-comment-avatar" height="48" src="'+reporterImage+'" width="48"></a>' +
-                '<div class="comment previewable-edit timeline-comment js-comment js-task-list-container">' +
-                '<div class="timeline-comment-header ">' +
-                '<div class="timeline-comment-header-text">' +
-                '<strong><a href="#" class="author">'+reporter.displayName+'</a></strong>' +
-                ' is the creator of this task. Task was created ' +
-                '<a href="#" class="timestamp">' +
-                '<time datetime="'+result.fields.created+'" is="relative-time" title="'+result.fields.created+'">'+result.fields.created+'</time>' +
-                '</a>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>';
-
-            $("div#jira_bucket").html(
-                assigneeText + reporterText
             );
         }
     );
 }
 
 function handlePrCreatePage() {
-    var body = $("textarea#pull_request_body");
+    let body = $("textarea#pull_request_body");
     if (body.attr('jira-loading') == 1) {
         return false; //Already loading
     }
     body.attr('jira-loading', 1);
 
-    var title = document.title;
-    var ticketUrl = '**No linked ticket**';
-    var ticketDescription = '...';
-    var acceptanceList = '';
+    let title = document.title;
+    let ticketUrl = '**No linked ticket**';
+    let ticketDescription = '...';
+    let acceptanceList = '';
 
     if (title != undefined) {
-        var titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
+        let titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
         if (titleMatch) {
             // Found a title, fetch some info from the ticket
             // Get the last one in the list.
-            var ticketNumber = titleMatch[titleMatch.length - 1];
+            let ticketNumber = titleMatch[titleMatch.length - 1];
             ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
             //Load up data from jira
@@ -265,7 +204,7 @@ function handlePrCreatePage() {
                 function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
 
-                    var description = result.fields.description;
+                    let description = result.fields.description;
 
                     if (typeof description == 'string' || description instanceof String) {
                         description = description.substr(description.indexOf(acceptanceStartString), description.length);
