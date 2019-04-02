@@ -18,6 +18,17 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
+#### 1.2.0
+- Added option to disable automatic title generation
+- Added option to disable automatic template insertion
+- Fixed incorrect title loading when opening an MR
+- Updated jQuery to 3.3.1
+- Improved look of inserted information in PR overview
+- Improved option page
+- Improved API calls - no longer using jQuery's `ajax`, but Chrome's `fetch` in a background view.
+- Changed template language to be English by default
+- Removed the extra tab generated, as it wasn't really used
+
 #### 1.1.1
 - Fixed compatibilty with new GitHub layout (#15, #18)
 - Added ticket status in PR (#17)
