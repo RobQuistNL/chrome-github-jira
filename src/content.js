@@ -2,20 +2,21 @@
 let lastRefresh = (new Date()).getTime();
 let jiraLogo = chrome.extension.getURL("images/jira.png");
 let jiraUrl = undefined;
-let acceptanceStartString = 'h3. Acceptatiecriteria';
-let acceptanceEndString  = 'h3. Notities';
+let acceptanceStartString = 'h3. Acceptance Criteria';
+let acceptanceEndString  = 'h3. Notes';
 let prTemplate = '';
+let prTemplateEnabled = true;
+let prTitleEnabled = true;
 let NL = "\r";
 chrome.storage.sync.get({
     jiraUrl: '',
-    acceptanceStartString: 'h3. Acceptatiecriteria',
-    acceptanceEndString: 'h3. Notities',
-    prTemplate: '### Ticket' + NL +
+    acceptanceStartString: 'h3. Acceptance Criteria',
+    acceptanceEndString: 'h3. Notes',
+    prTemplateEnabled: true,
+    prTitleEnabled: true,
+    prTemplate: '### Fix {{TICKETNUMBER}}' + NL +
         'Link to ticket: {{TICKETURL}}' + NL +
         NL +
-        //'#### Description' +  NL +
-        //'{{DESCRIPTION}}' + NL +
-        //NL +
         '### What has been done' +  NL +
         '- ' +  NL +
         '- ' +  NL +
@@ -39,6 +40,9 @@ chrome.storage.sync.get({
     acceptanceStartString = items.acceptanceStartString;
     acceptanceEndString = items.acceptanceEndString;
     prTemplate = items.prTemplate;
+    prTemplateEnabled = items.prTemplateEnabled;
+    prTitleEnabled = items.prTitleEnabled;
+
     if (jiraUrl == '') {
         console.error('GitHub Jira plugin could not load: Jira URL is not set.');
         return;
@@ -76,6 +80,7 @@ function checkPage() {
             handlePrPage();
         }, 200); //Small timeout for dom to finish setup
     }
+
     if (url.match(/github\.com\/(.*)\/(.*)\/pulls/) != null) {
         //@todo PR overview page
     }
@@ -179,6 +184,10 @@ function handlePrPage() {
 }
 
 function handlePrCreatePage() {
+    if (prTitleEnabled == false && prTemplateEnabled == false) {
+        return;
+    }
+
     let body = $("textarea#pull_request_body");
     if (body.attr('jira-loading') == 1) {
         return false; //Already loading
@@ -187,9 +196,8 @@ function handlePrCreatePage() {
 
     let title = document.title;
     let ticketUrl = '**No linked ticket**';
-    let ticketDescription = '...';
     let acceptanceList = '';
-
+    let ticketNumber = '?';
     if (title != undefined) {
         let titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
         if (titleMatch) {
@@ -202,7 +210,9 @@ function handlePrCreatePage() {
             chrome.runtime.sendMessage(
                 {query: 'getTicketInfo', jiraUrl: jiraUrl, ticketNumber: ticketNumber},
                 function(result) {
-                    $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
+                    if (prTitleEnabled) {
+                        $('input#pull_request_title').val('[' + ticketNumber.toUpperCase() + '] ' + result.fields.summary);
+                    }
 
                     let description = result.fields.description;
 
@@ -218,5 +228,7 @@ function handlePrCreatePage() {
         }
     }
 
-    body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{DESCRIPTION}}', ticketDescription).replace('{{ACCEPTANCE}}', acceptanceList));
+    if (prTemplateEnabled) {
+        body.val(prTemplate.replace('{{TICKETURL}}', ticketUrl).replace('{{TICKETNUMBER}}', ticketNumber).replace('{{ACCEPTANCE}}', acceptanceList));
+    }
 }

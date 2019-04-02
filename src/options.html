@@ -8,32 +8,84 @@
 </head>
 
 <body>
-<br/><br/>
-    <H1>GitHub Jira integration plugin for Chrome</H1>
-    <br/><br/>
-    <span id="status"></span><br/>
-    <label for="jiraUrl">Jira URL (without scheme or slashes):</label>
-    <input type="url" id="jiraUrl"/><br/>
-    <label for="acceptanceStartString">Acceptance criteria start string</label>
-    <input type="text" id="acceptanceStartString"/><br/>
-    <label for="acceptanceEndString">Acceptance criteria end string</label>
-    <input type="text" id="acceptanceEndString"/><br/>
-    <label for="prTemplate">New PR template:</label>
-    <textarea style="width:300px; height:200px;" id="prTemplate"></textarea>
-    <br /><br/>
-    <button id="save">Save</button>
-    <br />
-    <button id="clear">Clear storage</button>
-    <p>It's possible to show the acceptance criteria from your issues in your PR. You need to place the following tag in your template:</p>
-    <p>### Acceptance criteria<br>{{ACCEPTANCE}}</p>
-    
-    <a target="_blank" href="https://github.com/RobQuistNL/chrome-github-jira">
-        <img
-            style="position: absolute; top: 0; right: 0; border: 0;"
-            src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67"
-            alt="Fork me on GitHub"
-            data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png">
-    </a>
+<a href="https://github.com/RobQuistNL/chrome-github-jira">Source / GitHub / Issues</a>
+<br/>
+<h3>Settings</h3>
+<table>
+    <tr>
+        <td><label for="jiraUrl">Jira URL (without scheme or slashes):</label></td>
+        <td><input type="url" id="jiraUrl"/></td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="acceptanceStartString">Acceptance criteria start string</label>
+        </td>
+        <td>
+            <input type="text" id="acceptanceStartString"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="acceptanceEndString">Acceptance criteria end string</label>
+        </td>
+        <td>
+            <input type="text" id="acceptanceEndString"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="prTitleEnabled">Automatically insert title based on ticket number</label>
+        </td>
+        <td>
+            <input type="checkbox" id="prTitleEnabled" value="1"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label for="prTemplateEnabled">Automatically insert template in new PR</label>
+        </td>
+        <td>
+            <input type="checkbox" id="prTemplateEnabled" value="1"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            <label for="prTemplate">New PR template:</label>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <textarea style="width:300px; height:200px;" id="prTemplate"></textarea>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            <h2 id="status" style="display:none;background-color:rgb(57,255,59);">Options saved.</h2>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <button id="save">Save</button>
+        </td>
+        <td>
+            <button id="clear">Clear storage</button>
+        </td>
+    </tr>
+</table>
+
+    <h3>Available template variables:</h3>
+    <table>
+        <tr><td><pre>{{ACCEPTANCE}}</pre></td> <td>The acceptance criteria as parsed from the ticket</td></tr>
+        <tr><td><pre>{{TICKETURL}}</pre></td> <td>Direct URL to the Jira ticket</td></tr>
+        <tr><td><pre>{{TICKETNUMBER}}</pre></td> <td>The ticket in XXX-123 format</td></tr>
+    </table>
 
     <script type="text/javascript" src="options.js"></script>
 </body>

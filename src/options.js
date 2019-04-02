@@ -1,38 +1,39 @@
 function loadOptions() {
-    var NL = "\r";
+    let NL = "\r";
     chrome.storage.sync.get({
         jiraUrl: '',
-        acceptanceStartString: 'h3. Acceptatiecriteria',
-        acceptanceEndString: 'h3. Notities',
-        prTemplate: '### Ticket' + NL +
-            'Link to ticket: {{TICKETURL}}' + NL +
-            NL +
-            //'#### Description' +  NL +
-            //'{{DESCRIPTION}}' + NL +
-            //NL +
-            '### What has been done' +  NL +
-            '- ' +  NL +
-            '- ' +  NL +
-            NL +
-            '### How to test' +  NL +
-            '- ' +  NL +
-            '- ' +  NL +
-            NL +
-            '### Acceptance criteria' +  NL +
-            '{{ACCEPTANCE}}' +
-            NL +
-            '### Todo' +  NL +
-            '- [ ] ' +  NL +
-            '- [ ] ' +  NL +
-            NL +
-            '### Notes' +  NL +
-            '- ' +  NL +
-            '- '
+        acceptanceStartString: 'h3. Acceptance Criteria',
+        acceptanceEndString: 'h3. Notes',
+        prTemplateEnabled: true,
+        prTitleEnabled: true,
+        prTemplate: '### Fix {{TICKETNUMBER}}' + NL +
+        'Link to ticket: {{TICKETURL}}' + NL +
+        NL +
+        '### What has been done' +  NL +
+        '- ' +  NL +
+        '- ' +  NL +
+        NL +
+        '### How to test' +  NL +
+        '- ' +  NL +
+        '- ' +  NL +
+        NL +
+        '### Acceptance criteria' +  NL +
+        '{{ACCEPTANCE}}' +
+        NL +
+        '### Todo' +  NL +
+        '- [ ] ' +  NL +
+        '- [ ] ' +  NL +
+        NL +
+        '### Notes' +  NL +
+        '- ' +  NL +
+        '- '
     }, function(items) {
         document.getElementById('jiraUrl').value = items.jiraUrl;
         document.getElementById('acceptanceStartString').value = items.acceptanceStartString;
         document.getElementById('acceptanceEndString').value = items.acceptanceEndString;
         document.getElementById('prTemplate').value = items.prTemplate;
+        document.getElementById("prTemplateEnabled").checked = items.prTemplateEnabled;
+        document.getElementById("prTitleEnabled").checked = items.prTitleEnabled;
     });
 }
 
@@ -41,20 +42,25 @@ function saveOptions() {
         jiraUrl: document.getElementById("jiraUrl").value,
         acceptanceStartString: document.getElementById("acceptanceStartString").value,
         acceptanceEndString: document.getElementById("acceptanceEndString").value,
-        prTemplate: document.getElementById("prTemplate").value
+        prTemplate: document.getElementById("prTemplate").value,
+        prTemplateEnabled: document.getElementById("prTemplateEnabled").checked,
+        prTitleEnabled: document.getElementById("prTitleEnabled").checked,
     }, function() {
         // Update status to let user know options were saved.
-        var status = document.getElementById('status');
-        status.textContent = 'Options saved.';
+        let status = document.getElementById('status');
+        status.style.display = 'block';
         window.scrollTo(0, 0);
         setTimeout(function() {
-            status.textContent = '';
-        }, 750);
+            status.style.display = 'none';
+        }, 2000);
     });
 }
 
 function clearOptions() {
-    chrome.storage.sync.remove(['jiraUrl', 'prTemplate']);
+    chrome.storage.sync.remove([
+        'jiraUrl', 'prTemplate', 'acceptanceStartString', 'acceptanceEndString', 'prTemplateEnabled',
+        'prTitleEnabled'
+    ]);
     loadOptions();
     saveOptions();
 }
