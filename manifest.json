@@ -5,7 +5,7 @@
 
     "description": "This extension shows contents of linked tasks from Jira in Github",
 
-    "author": "Rob Quist",
+    "author": "Rob Quist / DukeSoft",
     "homepage_url": "https://github.com/RobQuistNL/chrome-github-jira",
 
     "options_ui": {
@@ -28,7 +28,7 @@
     "content_scripts": [
         {
             "matches": ["*://github.com/*"],
-            "js": ["vendor/jquery-2.1.4.min.js", "src/content.js"],
+            "js": ["vendor/jquery-3.3.1.min.js", "src/content.js"],
             "run_at": "document_end"
         }
     ],
@@ -38,5 +38,10 @@
         "storage",
         "https://*.atlassian.net/",
         "http://*.atlassian.net/"
-    ]
+    ],
+
+    "background": {
+        "scripts": ["src/background.js"],
+        "persistent": false
+    }
 }

@@ -45,22 +45,27 @@ chrome.storage.sync.get({
     }
 
     //Check login
-    var loginResult = $.ajax('https://' + jiraUrl + '/rest/auth/1/session', {async: false}).responseJSON;
-    if (loginResult.name == undefined) {
-        console.error('You are not logged in to Jira at http://'+jiraUrl+' - Please login.');
-        return;
-    }
+    chrome.runtime.sendMessage(
+        {query: 'getSession', jiraUrl: jiraUrl},
+        function(loginResult) {
+            if (loginResult.name == undefined) {
+                console.error('You are not logged in to Jira at http://'+jiraUrl+' - Please login.');
+                return;
+            }
 
-    // Check page if content changed (for AJAX pages)
-    $(document).on('DOMNodeInserted', function() {
-        if ((new Date()).getTime() - lastRefresh >= 250) {
-            lastRefresh = (new Date()).getTime();
+            // Check page if content changed (for AJAX pages)
+            $(document).on('DOMNodeInserted', function() {
+                if ((new Date()).getTime() - lastRefresh >= 250) {
+                    lastRefresh = (new Date()).getTime();
+                    checkPage();
+                }
+            });
+
+            // Check page initially
             checkPage();
         }
-    });
+    );
 
-    // Check page initially
-    checkPage();
 });
 
 function checkPage() {
@@ -226,6 +231,7 @@ function handlePrPage() {
 }
 
 function handlePrCreatePage() {
+    console.log('Handle PR page');
     var body = $("textarea#pull_request_body");
     if (body.attr('jira-loading') == 1) {
         return false; //Already loading
@@ -245,16 +251,14 @@ function handlePrCreatePage() {
             ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
             //Load up data from jira
-            $.ajax({
-                url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
-                dataType: "json",
-                async: false,
-                success: function(result) {
+            chrome.runtime.sendMessage(
+                {query: 'getTicketInfo', jiraUrl: jiraUrl, ticketNumber: ticketNumber},
+                function(result) {
                     $('input#pull_request_title').val('['+ticketNumber.toUpperCase()+'] ' + result.fields.summary);
 
                     var description = result.fields.description;
 
-                    if(typeof description == 'string' || description instanceof String) {
+                    if (typeof description == 'string' || description instanceof String) {
                         description = description.substr(description.indexOf(acceptanceStartString), description.length);
                         description = description.substr(0, description.indexOf(acceptanceEndString));
                         description = description.substr(acceptanceStartString.length, description.length - acceptanceEndString.length);
@@ -262,7 +266,7 @@ function handlePrCreatePage() {
                         acceptanceList = description.replace(/#/g, '- [ ]').replace(/^\s+|\s+$/g, '');
                     }
                 }
-            });
+            );
         }
     }
 
