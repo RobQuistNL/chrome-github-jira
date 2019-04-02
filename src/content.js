@@ -163,27 +163,36 @@ function handlePrPage() {
     });
 
     //Load up data from jira
-    $.ajax({
-        url: "https://"+jiraUrl+"/rest/api/latest/issue/" + ticketNumber,
-        dataType: "json",
-        success: function(result){
-            $("#insertedJiraData").html(
-                '<div class="flex-table gh-header-meta" style="width: 100%; float: left; margin-bottom: 20px;">' +
-                    '<div class="flex-table-item" style="float: left;">' +
-                    '<div class="state" style="background-color: rgb(150, 198, 222);">' +
-                    '<span class="octicon"><img src="'+jiraLogo+'" /></span> Jira' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="flex-table-item flex-table-item-primary" style="float: left; padding-left: 10px; line-height: 31px;">' +
-                    result.fields.summary + ' <span class="Counter">'+result.fields.status.name+'</span>' +
-                    '</div>' +
-                    '</div>'
-            );
-
+    chrome.runtime.sendMessage(
+        {query: 'getTicketInfo', jiraUrl: jiraUrl, ticketNumber: ticketNumber},
+        function(result) {
             var assignee = result.fields.assignee;
             var reporter = result.fields.reporter;
-            var assigneeImage = $.ajax(assignee.self, {async: false}).responseJSON.avatarUrls['48x48'];
-            var reporterImage = $.ajax(reporter.self, {async: false}).responseJSON.avatarUrls['48x48'];
+
+            var assigneeImage = assignee.avatarUrls['48x48'];
+            var reporterImage = reporter.avatarUrls['48x48'];
+
+            $("#insertedJiraData").html(
+                '<div class="TableObject gh-header-meta">' +
+                    '<div class="TableObject-item">' +
+                        '<span class="State State--green" style="background-color: rgb(150, 198, 222);">' +
+                            '<img height="16" class="octicon" width="12" aria-hidden="true" src="'+jiraLogo+'"/> <a style="color:white;" href="'+ticketUrl+'" target="_blank">Jira</a>' +
+                        '</span>' +
+                    '</div>' +
+                    '<div class="TableObject-item">' +
+                    '<span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">' +
+                    '<img height="16" class="octicon" width="12" aria-hidden="true" src="'+result.fields.status.iconUrl+'"/> ' + result.fields.status.name +
+                    '</span>' +
+                    '</div>' +
+                    '<div class="TableObject-item TableObject-item--primary">' +
+                        '<b><a href="'+ticketUrl+'" target="_blank">['+ticketNumber+'] - '+result.fields.summary+'</a></b>' +
+                        ' - Reported by ' +
+                        '<span class="author text-bold">'+assignee.displayName+'</span>' +
+                        ' and assigned to ' +
+                        '<span class="author text-bold">'+reporter.displayName+'</span>' +
+                    '</div>' +
+                '</div>'
+            );
 
             var assigneeText = '<div class="discussion-timeline pull-discussion-timeline js-quote-selection-container ">' +
                 '<div class="js-discussion js-socket-channel">' +
@@ -227,7 +236,7 @@ function handlePrPage() {
                 assigneeText + reporterText
             );
         }
-    });
+    );
 }
 
 function handlePrCreatePage() {
