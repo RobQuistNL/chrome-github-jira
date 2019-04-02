@@ -232,7 +232,7 @@ function handlePrCreatePage() {
     }
     body.attr('jira-loading', 1);
 
-    var title = $('.range-cross-repo-pair .js-menu-target .css-truncate-target:eq(3)').html();
+    var title = document.title;
     var ticketUrl = '**No linked ticket**';
     var ticketDescription = '...';
     var acceptanceList = '';
@@ -240,8 +240,9 @@ function handlePrCreatePage() {
     if (title != undefined) {
         var titleMatch = title.match(/([a-zA-Z]+-[0-9]+)/);
         if (titleMatch) {
-            //Found a title, fetch some info from the ticket
-            var ticketNumber = titleMatch[0];
+            // Found a title, fetch some info from the ticket
+            // Get the last one in the list.
+            var ticketNumber = titleMatch[titleMatch.length - 1];
             ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
             //Load up data from jira
