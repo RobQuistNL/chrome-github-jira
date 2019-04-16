@@ -173,9 +173,9 @@ function handlePrPage() {
                     '<div class="TableObject-item TableObject-item--primary">' +
                         '<b><a href="'+ticketUrl+'" target="_blank">['+ticketNumber+'] - '+result.fields.summary+'</a></b>' +
                         ' - Reported by ' +
-                        '<span class="author text-bold"><img src="'+assigneeImage+'" width="16"/> '+assignee.displayName+'</span>' +
-                        ' and assigned to ' +
                         '<span class="author text-bold"><img src="'+reporterImage+'" width="16"/> '+reporter.displayName+'</span>' +
+                        ' and assigned to ' +
+                        '<span class="author text-bold"><img src="'+assigneeImage+'" width="16"/> '+assignee.displayName+'</span>' +
                     '</div>' +
                 '</div>'
             );
