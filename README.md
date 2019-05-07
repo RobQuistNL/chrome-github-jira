@@ -18,6 +18,9 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
+#### 1.2.1
+- Fixed order of reporter / assigned names
+
 #### 1.2.0
 - Added option to disable automatic title generation
 - Added option to disable automatic template insertion
