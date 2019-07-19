@@ -203,7 +203,7 @@ function handlePrCreatePage() {
         if (titleMatch) {
             // Found a title, fetch some info from the ticket
             // Get the last one in the list.
-            let ticketNumber = titleMatch[titleMatch.length - 1];
+            ticketNumber = titleMatch[titleMatch.length - 1];
             ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
             //Load up data from jira
