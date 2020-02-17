@@ -152,32 +152,42 @@ function handlePrPage() {
     chrome.runtime.sendMessage(
         {query: 'getTicketInfo', jiraUrl: jiraUrl, ticketNumber: ticketNumber},
         function(result) {
-            let assignee = result.fields.assignee;
-            let reporter = result.fields.reporter;
+            const reporter = result.fields.reporter;
+            const assignee = result.fields.assignee || false;
+            let assigneeDetails = '';  
 
-            let assigneeImage = assignee.avatarUrls['16x16'];
-            let reporterImage = reporter.avatarUrls['16x16'];
+            if (assignee) {
+                assigneeDetails = ` and assigned to <span class="author text-bold">
+                    <img src="${assignee.avatarUrls['16x16']}" width="16"/>
+                    ${assignee.displayName}
+                </span>`;
+            }
 
             $("#insertedJiraData").html(
-                '<div class="TableObject gh-header-meta">' +
-                    '<div class="TableObject-item">' +
-                        '<span class="State State--green" style="background-color: rgb(150, 198, 222);">' +
-                            '<img height="16" class="octicon" width="12" aria-hidden="true" src="'+jiraLogo+'"/> <a style="color:white;" href="'+ticketUrl+'" target="_blank">Jira</a>' +
-                        '</span>' +
-                    '</div>' +
-                    '<div class="TableObject-item">' +
-                    '<span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">' +
-                    '<img height="16" class="octicon" width="12" aria-hidden="true" src="'+result.fields.status.iconUrl+'"/> ' + result.fields.status.name +
-                    '</span>' +
-                    '</div>' +
-                    '<div class="TableObject-item TableObject-item--primary">' +
-                        '<b><a href="'+ticketUrl+'" target="_blank">['+ticketNumber+'] - '+result.fields.summary+'</a></b>' +
-                        ' - Reported by ' +
-                        '<span class="author text-bold"><img src="'+reporterImage+'" width="16"/> '+reporter.displayName+'</span>' +
-                        ' and assigned to ' +
-                        '<span class="author text-bold"><img src="'+assigneeImage+'" width="16"/> '+assignee.displayName+'</span>' +
-                    '</div>' +
-                '</div>'
+                `<div class="TableObject gh-header-meta">
+                    <div class="TableObject-item">
+                        <span class="State State--green" style="background-color: rgb(150, 198, 222);">
+                            <img height="16" class="octicon" width="12" aria-hidden="true" src="${jiraLogo}"/>
+                            <a style="color:white;" href="${ticketUrl}" target="_blank">Jira</a>
+                        </span>
+                    </div>
+                    <div class="TableObject-item">
+                        <span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">
+                            <img height="16" class="octicon" width="12" aria-hidden="true" src="${result.fields.status.iconUrl}"/>
+                            ${result.fields.status.name}
+                        </span>
+                    </div>
+                    <div class="TableObject-item TableObject-item--primary">
+                        <strong>
+                            <a href="${ticketUrl}" target="_blank">
+                                [${ticketNumber}] - ${result.fields.summary}
+                            </a>
+                        </strong> - Reported by <span class="author text-bold">
+                            <img src="${reporter.avatarUrls['16x16']}" width="16"/>
+                                ${reporter.displayName}
+                        </span>${assigneeDetails}
+                    </div>
+                </div>`
             );
         }
     );
