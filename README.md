@@ -18,6 +18,10 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
+#### 1.2.2
+- Assignee is now optional, doesn't show when unassigned
+- Page jumps around a bit less when loading ticket information
+
 #### 1.2.1
 - Fixed order of reporter / assigned names
 
