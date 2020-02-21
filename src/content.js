@@ -145,7 +145,7 @@ function handlePrPage() {
 
     //Open up a handle for data
     $('#partial-discussion-header').append(
-        '<div id="insertedJiraData">Loading ticket '+ticketNumber+'...</div>'
+        '<div id="insertedJiraData" class="gh-header-meta">Loading ticket '+ticketNumber+'...</div>'
     );
 
     //Load up data from jira
