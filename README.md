@@ -15,9 +15,19 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - Load unpacked extension
 - Select that folder
 
-
 ### Changelog
 
+#### 1.3.0
+- [ ] Refactor code to es6
+    - Use `const` over `let` when preferred
+    - Use arrow functions for lambdas that do not require `this`
+    - Improve code reuse
+    - Reduce duplication
+- [ ] Improve templates
+- [x] Add editorconfig
+- [x] Add eslint and config
+- [ ] Filter by org
+  
 #### 1.2.2
 - Assignee is now optional, doesn't show when unassigned
 - Page jumps around a bit less when loading ticket information

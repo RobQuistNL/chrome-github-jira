@@ -22,7 +22,8 @@
     },
 
     "web_accessible_resources": [
-        "images/jira.png"
+        "images/jira.png",
+        "src/templates.js"
     ],
 
     "content_scripts": [

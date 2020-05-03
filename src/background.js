@@ -1,11 +1,11 @@
-function getUrlFromRequest(request) {
-    switch (request.query) {
+function getUrlFromRequest({ query, jiraUrl, ticketNumber } = {}) {
+    switch (query) {
         case 'getSession':
-            return `https://${request.jiraUrl}/rest/auth/1/session`;
+            return `https://${jiraUrl}/rest/auth/1/session`;
         case 'getTicketInfo':
-            return `https://${request.jiraUrl}/rest/api/latest/issue/${request.ticketNumber}`;
+            return `https://${jiraUrl}/rest/api/latest/issue/${ticketNumber}`;
         default:
-            throw new Error(`Invalid request: ${request.query}`);
+            throw new Error(`Invalid request: ${query}`);
     }
 }
 
