@@ -51,22 +51,24 @@ const GITHUB_PAGE_COMPARE = /github\.com\/(.*)\/(.*)\/compare\/(.*)/
 // TEMPLATES
 /////////////////////////////////
 
-function commitStream(href, content) {
-    return `
+function commitStreamEl(href, content) {
+    const el = document.createElement('div');
+    el.innerHTML = `
         <a href="${href}">${content[0]}</a>
         <a href="${getJiraUrl(content[1])}" target="_blank" alt="Ticket in Jira"><b>${content[1]}</b></a>
         <a href="${href}">${content[2].trim()}</a>
     `;
+    return el;
 }
 
-function titleBlock(title, issueKey) {
+function titleHTMLContent(title, issueKey) {
     return title.replace(/([A-Z]+-[0-9]+)/, `
         <a href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
     `);
 }
 
 
-function userBlock(text, user) {
+function userHTMLContent(text, user) {
     if (user && typeof user === 'object') {
         const { avatarUrls, displayName } = user
         return `
@@ -82,12 +84,12 @@ function userBlock(text, user) {
     return ''
 }
 
-function loadingBlock(issueKey) {
-    return `
-        <div id="insertedJiraData" class="gh-header-meta">
-            Loading ticket ${issueKey}...
-        </div>
-    `;
+function buildLoadingElement(issueKey) {
+    const el = document.createElement('div');
+    el.id = 'insertedJiraData';
+    el.className = 'gh-header-meta';
+    el.innerText = `Loading ticket ${issueKey}...`;
+    return el;
 }
 
 function headerBlock(issueKey, 
@@ -120,8 +122,8 @@ function headerBlock(issueKey,
                     </a>
                 </strong>
                 <p>
-                    ${userBlock('Reported by', reporter)}
-                    ${userBlock('and assigned to', assignee)}
+                    ${userHTMLContent('Reported by', reporter)}
+                    ${userHTMLContent('and assigned to', assignee)}
                 </p>
             </div>
         </div>
@@ -161,7 +163,7 @@ async function main(items) {
         const { name } = await sendMessage({ query: 'getSession', jiraUrl });
 
         // Check page if content changed (for AJAX pages)
-        $(document).on('DOMNodeInserted', () => {
+        document.addEventListener('DOMNodeInserted', () => {
             if ((new Date()).getTime() - lastRefresh >= REFRESH_TIMEOUT) {
                 lastRefresh = (new Date()).getTime();
                 checkPage();
@@ -218,29 +220,34 @@ function checkPage() {
 
 
 function handleCommitsTitle() {
-    $(".commit-message code").each(function(index, item) {
-        const $item = $(item);
-        const $itemLink = $item.find('a');
-        const itemLinkHtml = $itemLink.html();
-        const splittedContent = itemLinkHtml.split(/([A-Z]+-[0-9]+)/g);
+    document.querySelectorAll('.commit-message code').forEach((el) => {
+        const linkEl = el.querySelector('a');
+        const linkHtml = linkEl.innerHTML;
+        const splittedContent = linkHtml.split(/([A-Z]+-[0-9]+)/g);
 
         if (splittedContent.length < 3) {
             return;
         }
 
-        $item.html('');
+        const contentEl = document.createElement('div');
         for(var i=0; i< splittedContent.length; i+=3) {
-            $item.append(commitStream($itemLink[0].href, splittedContent));
+            contentEl.appendChild(commitStreamEl(linkEl.getAttribute('href'), splittedContent));
         }
+        el.innerHTML = '';
+        el.appendChild(contentEl);
     });
 }
 
 async function handlePrPage() {
-    const title = $("h1 > span.js-issue-title").html();
-    if (!title || $('#insertedJiraData').length > 0) {
+    const titleEl = document.querySelector('h1 > span.js-issue-title');
+    const insertedJiraDataEl = document.querySelector('#insertedJiraData');
+    const partialDiscussionHeaderEl = document.querySelector('#partial-discussion-header');
+    if (!titleEl || insertedJiraDataEl) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
     }
+
+    const title = titleEl.innerHTML;
 
     const [ticketNumber] = title.match(/([A-Z]+-[0-9]+)/);
     if (!ticketNumber) {
@@ -249,10 +256,11 @@ async function handlePrPage() {
     }
 
     //Replace title with clickable link to jira ticket
-    $("h1 > span.js-issue-title").html(titleBlock(title, ticketNumber));
+    titleEl.innerHTML = titleHTMLContent(title, ticketNumber);
 
     //Open up a handle for data
-    $('#partial-discussion-header').append(loadingBlock(ticketNumber));
+    const loadingElement = buildLoadingElement(ticketNumber);
+    partialDiscussionHeaderEl.appendChild(loadingElement);
 
     //Load up data from jira
     try {
@@ -260,10 +268,10 @@ async function handlePrPage() {
         if (result.errors) {
             throw new Error(result.errorMessages);
         }
-        $("#insertedJiraData").html(headerBlock(ticketNumber, result.fields));
+        loadingElement.innerHTML = headerBlock(ticketNumber, result.fields);
     } catch(e) {
         console.error('Issue fetching data', e)
-        $("#insertedJiraData").html(e.message)
+        loadingElement.innerText = e.message;
     }
 }
 
@@ -272,11 +280,11 @@ async function handlePrCreatePage() {
         return;
     }
 
-    let body = $("textarea#pull_request_body");
-    if (body.attr('jira-loading') == 1) {
+    let body = document.querySelector('textarea#pull_request_body');
+    if (body.getAttribute('jira-loading') === 'true') {
         return false; //Already loading
     }
-    body.attr('jira-loading', 1);
+    body.setAttribute('jira-loading', 'true');
 
     const title = document.title;
     let ticketUrl = '**No linked ticket**';
@@ -302,7 +310,7 @@ async function handlePrCreatePage() {
                 }
 
                 if (prTitleEnabled) {
-                    $('input#pull_request_title').val(`[${ticketNumber.toUpperCase()}] ${summary}`);
+                    document.querySelector('input#pull_request_title').value = `[${ticketNumber.toUpperCase()}] ${summary}`;
                 }
 
                 let description = orgDescription
@@ -320,11 +328,10 @@ async function handlePrCreatePage() {
     }
 
     if (prTemplateEnabled) {
-        body.val(
-            prTemplate
-                .replace('{{TICKETURL}}', ticketUrl)
-                .replace('{{TICKETNUMBER}}', ticketNumber)
-                .replace('{{ACCEPTANCE}}', acceptanceList)
-        );
+        const nextBodyValue = prTemplate
+            .replace('{{TICKETURL}}', ticketUrl)
+            .replace('{{TICKETNUMBER}}', ticketNumber)
+            .replace('{{ACCEPTANCE}}', acceptanceList);
+        body.value = nextBodyValue;
     }
 }
