@@ -40,12 +40,11 @@ main().catch(err => console.error('Unexpected error', err))
 // CONSTANTS
 /////////////////////////////////
 
-const PAGE_PR = 'PAGE_PR';
-const PAGE_PR_CREATE = 'PAGE_PR_CREATE';
-
 const GITHUB_PAGE_PULL = /github\.com\/(.*)\/(.*)\/pull\//
 const GITHUB_PAGE_PULLS = /github\.com\/(.*)\/(.*)\/pulls/
 const GITHUB_PAGE_COMPARE = /github\.com\/(.*)\/(.*)\/compare\/(.*)/
+
+const JIRA_KEY_REGEX = /(?:^|\W)([A-Z]+-\d+)(?:\W|$)/;
 
 /////////////////////////////////
 // TEMPLATES
@@ -92,14 +91,12 @@ function buildLoadingElement(issueKey) {
     return el;
 }
 
-function headerBlock(issueKey, 
-    {
-        assignee,
-        reporter,
-        status: { iconUrl: statusIcon, name: statusName } = {},
-        summary
-    } = {}
-) {
+function headerBlock(issueKey, {
+    assignee,
+    reporter,
+    status: { iconUrl: statusIcon, name: statusName } = {},
+    summary
+} = {}) {
     const issueUrl = getJiraUrl(issueKey)
     return `
         <div class="TableObject gh-header-meta">
@@ -130,8 +127,28 @@ function headerBlock(issueKey,
     `
 }
 
+function createPullsPageEl({
+    key,
+    fields: {
+        status: { name: statusName } = {},
+        statuscategorychangedate: statusChangeDate
+    } = {}
+} = {}) {
+    const issueUrl = getJiraUrl(key);
+    const tooltip = `transitioned ${relativeTime(new Date(statusChangeDate))}`
+    const el = document.createElement('span');
+    el.className = 'd-none d-md-inline';
+    el.innerHTML = `
+        •
+        <a class="muted-link tooltipped tooltipped-s" aria-label="${tooltip}" href="${issueUrl}">
+            ${key} in ${statusName}
+        </a>
+    `;
+    return el;
+}
+
 /////////////////////////////////
-// FUNCTIONS
+// MAIN FUNC AND UTILS
 /////////////////////////////////
 
 async function main(items) {
@@ -194,30 +211,11 @@ async function sendMessage(data) {
     })
 }
 
-
-function onPageChange(page) {
-    setTimeout(function() {
-        handleCommitsTitle();
-        if (page === PAGE_PR) handlePrPage();
-        if (page === PAGE_PR_CREATE) handlePrCreatePage();
-    }, 200); //Small timeout for dom to finish setup
+async function asyncTimeout(ms, timeoutHandle) {
+    return new Promise((resolve, reject) => {
+        timeoutHandle = setTimeout(resolve, ms);
+    })
 }
-
-function checkPage() {
-    let url = window.location.href;
-    if (url.match(GITHUB_PAGE_PULL) != null) {
-        onPageChange(PAGE_PR)
-    }
-
-    if (url.match(GITHUB_PAGE_PULLS) != null) {
-        //@todo PR overview page
-    }
-
-    if (url.match(GITHUB_PAGE_COMPARE) != null) {
-        onPageChange(PAGE_PR_CREATE);
-    }
-}
-
 
 function handleCommitsTitle() {
     document.querySelectorAll('.commit-message code').forEach((el) => {
@@ -236,6 +234,75 @@ function handleCommitsTitle() {
         el.innerHTML = '';
         el.appendChild(contentEl);
     });
+}
+
+function relativeTime(previous, current = new Date()) {
+    const msPerMinute = 60 * 1000;
+    const msPerHour = msPerMinute * 60;
+    const msPerDay = msPerHour * 24;
+    const msPerMonth = msPerDay * 30;
+    const msPerYear = msPerDay * 365;
+    const elapsed = current - (previous instanceof Date ? previous.getTime() : previous);
+
+    if (elapsed < msPerMinute) return `${Math.round(elapsed/1000)} seconds ago`;
+    else if (elapsed < msPerHour) return `${Math.round(elapsed/msPerMinute)} minutes ago`;
+    else if (elapsed < msPerDay ) return `${Math.round(elapsed/msPerHour )} hours ago`;   
+    else if (elapsed < msPerMonth) return `~${Math.round(elapsed/msPerDay)} days ago`;   
+    else if (elapsed < msPerYear) return `~${Math.round(elapsed/msPerMonth)} months ago`;
+    else return `~${Math.round(elapsed/msPerYear )} years ago`;
+}
+
+/////////////////////////////////
+// PAGE HANDLERS
+/////////////////////////////////
+
+function checkPage() {
+    let url = window.location.href;
+
+    const triggerPageHandler = async (handler) => {
+        if (typeof handler !== 'function') return;
+        //Small timeout for dom to finish setup
+        // @TODO find more efficient method
+        await asyncTimeout(200);
+        handleCommitsTitle();
+        handler();
+    }
+
+    if (url.match(GITHUB_PAGE_PULL) != null) {
+        triggerPageHandler(handlePrPage)
+    } else if (url.match(GITHUB_PAGE_PULLS) != null) {
+        triggerPageHandler(handlePrPullsPage);
+    } else if (url.match(GITHUB_PAGE_COMPARE) != null) {
+        triggerPageHandler(handlePrCreatePage);
+    }
+}
+
+async function handlePrPullsPage() {
+    const issuesContainer = document.querySelector('.repository-content div[aria-label="Issues"]:not(.jira-issues-processed)');
+    if (issuesContainer) {
+        const issues = issuesContainer.querySelectorAll('.Box-row');
+        issues.forEach(async (issue) => {
+            const issueLink = issue.querySelector('a[data-hovercard-type="pull_request"]');
+            if (!issueLink) return;
+
+            const issueLinkText = issueLink.innerText;
+
+            const match = issueLinkText && issueLinkText.match(JIRA_KEY_REGEX);
+            if (!match) return;
+            const issueKey = match[1];
+
+            const detailRow = issueLink.parentElement.querySelector(':nth-child(3)');
+            if (!detailRow) return;
+
+            try {
+                const result = await sendMessage({ query: 'getTicketInfo', jiraUrl, ticketNumber: issueKey });
+                detailRow.appendChild(createPullsPageEl(result));
+            } catch(e) {
+                console.error('Could not fetch key', e);
+            }
+        });
+        issuesContainer.className += ' jira-issues-processed';
+    }
 }
 
 async function handlePrPage() {
