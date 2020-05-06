@@ -30,21 +30,27 @@ let prTemplate = `
 let prTemplateEnabled = true;
 let prTitleEnabled = true;
 
-const REFRESH_TIMEOUT = 250;
-
-let store = {};
-
 main().catch(err => console.error('Unexpected error', err))
 
 /////////////////////////////////
 // CONSTANTS
 /////////////////////////////////
 
+const REFRESH_TIMEOUT = 250;
+
 const GITHUB_PAGE_PULL = /github\.com\/(.*)\/(.*)\/pull\//
 const GITHUB_PAGE_PULLS = /github\.com\/(.*)\/(.*)\/pulls/
 const GITHUB_PAGE_COMPARE = /github\.com\/(.*)\/(.*)\/compare\/(.*)/
 
 const JIRA_KEY_REGEX = /(?:^|\W)([A-Z]+-\d+)(?:\W|$)/;
+const JIRA_FIELDS = [
+    'assignee',
+    'description',
+    'reporter',
+    'summary',
+    'status',
+    'statuscategorychangedate'
+].join(',');
 
 /////////////////////////////////
 // TEMPLATES
@@ -295,7 +301,14 @@ async function handlePrPullsPage() {
             if (!detailRow) return;
 
             try {
-                const result = await sendMessage({ query: 'getTicketInfo', jiraUrl, ticketNumber: issueKey });
+                const result = await sendMessage({
+                    query: 'getTicketInfo',
+                    jiraUrl,
+                    ticketNumber: issueKey,
+                    params: {
+                        fields: JIRA_FIELDS
+                    }
+                });
                 detailRow.appendChild(createPullsPageEl(result));
             } catch(e) {
                 console.error('Could not fetch key', e);
@@ -331,7 +344,14 @@ async function handlePrPage() {
 
     //Load up data from jira
     try {
-        const result = await sendMessage({ query: 'getTicketInfo', jiraUrl, ticketNumber })
+        const result = await sendMessage({
+            query: 'getTicketInfo',
+            jiraUrl,
+            ticketNumber,
+            params: {
+                fields: JIRA_FIELDS
+            }
+        })
         if (result.errors) {
             throw new Error(result.errorMessages);
         }
@@ -371,7 +391,14 @@ async function handlePrCreatePage() {
                     fields: { summary, description: orgDescription },
                     errors = false,
                     errorMessages = false
-                } = {} = await sendMessage({ query: 'getTicketInfo', jiraUrl, ticketNumber });
+                } = {} = await sendMessage({
+                    query: 'getTicketInfo',
+                    jiraUrl,
+                    ticketNumber,
+                    params: {
+                        fields: JIRA_FIELDS
+                    }
+                });
                 if (errors) {
                     throw new Error(errorMessages)
                 }
