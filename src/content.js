@@ -9,22 +9,22 @@ let prTemplate = `
     Link to ticket: {{TICKETURL}}
 
     ### What has been done
-    - 
-    - 
+    -
+    -
 
     ### How to test
-    - 
-    - 
+    -
+    -
 
     ### Acceptance criteria
     {{ACCEPTANCE}}
 
     ### Todo
-    - [ ] 
-    - [ ] 
+    - [ ]
+    - [ ]
 
     ### Notes
-    - 
+    -
     -
 `;
 let prTemplateEnabled = true;
@@ -92,7 +92,7 @@ function buildLoadingElement(issueKey) {
     return el;
 }
 
-function headerBlock(issueKey, 
+function headerBlock(issueKey,
     {
         assignee,
         reporter,
@@ -270,7 +270,7 @@ async function handlePrPage() {
         }
         loadingElement.innerHTML = headerBlock(ticketNumber, result.fields);
     } catch(e) {
-        console.error('Issue fetching data', e)
+        console.error('Error fetching data', e)
         loadingElement.innerText = e.message;
     }
 }
