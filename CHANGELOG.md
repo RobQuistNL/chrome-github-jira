@@ -6,11 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Changelog 📝
+- Changelog 📝 [#36]
 
 ### Changed
-- Refactored code to es6 🎉
-- Fixed code style issues 💃
+- Refactored code to es6 🎉 [#36]
+- Fixed code style issues 💃 [#36]
 
 ### Removed
-- Removed jQuery dependency. 👋 See ya!
+- Removed jQuery dependency. 👋 See ya! [#36]
