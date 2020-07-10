@@ -62,7 +62,7 @@ function commitStreamEl(href, content) {
 }
 
 function titleHTMLContent(title, issueKey) {
-    return title.replace(/([A-Z]+-[0-9]+)/, `
+    return title.replace(/([A-Z0-9]+-[0-9]+)/, `
         <a href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
     `);
 }
@@ -249,7 +249,7 @@ async function handlePrPage() {
 
     const title = titleEl.innerHTML;
 
-    const [ticketNumber] = title.match(/([A-Z]+-[0-9]+)/);
+    const [ticketNumber] = title.match(/([A-Z0-9]+-[0-9]+)/);
     if (!ticketNumber) {
         // Title was found, but ticket number wasn't.
         return false;
