@@ -37,7 +37,9 @@
         "activeTab",
         "storage",
         "https://*.atlassian.net/",
-        "http://*.atlassian.net/"
+        "https://*.jira.com/",
+        "http://*.atlassian.net/",
+        "http://*.jira.com/"
     ],
 
     "background": {
