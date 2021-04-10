@@ -108,16 +108,29 @@ function statusIconBlock(statusIcon) {
     return `<img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>`
 }
 
+function statusCategoryColors(statusCategory) {
+    // There are only "blue", "green", and "grey" in Jira
+    switch (statusCategory.colorName) {
+        case "blue":
+            return { color: "white", background: "rgb(150, 198, 222)" }
+        case "green":
+            return { color: "white", background: "#28a745" }
+        default:
+            return { color: "rgb(40, 40, 40)", background: "rgb(220, 220, 220)" }
+    }
+}
+
 function headerBlock(issueKey,
     {
         assignee,
         reporter,
-        status: { iconUrl: statusIcon, name: statusName } = {},
+        status: { iconUrl: statusIcon, name: statusName, statusCategory } = {},
         summary
     } = {}
 ) {
     const issueUrl = getJiraUrl(issueKey)
     const statusIconHTML = statusIconBlock(statusIcon)
+    const { color: statusColor, background: statusBackground } = statusCategoryColors(statusCategory);
     return `
         <div class="TableObject gh-header-meta">
             <div class="TableObject-item">
@@ -127,7 +140,7 @@ function headerBlock(issueKey,
                 </span>
             </div>
             <div class="TableObject-item">
-                <span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">
+                <span class="State State--white" style="color: ${statusColor}; background: ${statusBackground}">
                     ${statusIconHTML}
                     ${statusName}
                 </span>
