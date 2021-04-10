@@ -32,8 +32,6 @@ let prTitleEnabled = true;
 
 const REFRESH_TIMEOUT = 250;
 
-let store = {};
-
 main().catch(err => console.error('Unexpected error', err))
 
 /////////////////////////////////
