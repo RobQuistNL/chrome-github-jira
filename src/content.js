@@ -121,10 +121,10 @@ function headerBlock(issueKey,
                         ${issueKey} - ${summary}
                     </a>
                 </strong>
-                <p>
+                <div class="d-inline-block">
                     ${userHTMLContent('Reported by', reporter)}
                     ${userHTMLContent('and assigned to', assignee)}
-                </p>
+                </div>
             </div>
         </div>
     `
