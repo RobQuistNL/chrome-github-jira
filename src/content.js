@@ -92,6 +92,22 @@ function buildLoadingElement(issueKey) {
     return el;
 }
 
+function statusIconBlock(statusIcon) {
+    if (!statusIcon) {
+        return ''
+    }
+
+    const origin = new URL(statusIcon).origin
+    const base = new URL(origin).href
+
+    // If the icon is the same as its origin, it most probably is not an image
+    if (statusIcon === origin || statusIcon === base) {
+        return ''
+    }
+
+    return `<img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>`
+}
+
 function headerBlock(issueKey,
     {
         assignee,
@@ -101,6 +117,7 @@ function headerBlock(issueKey,
     } = {}
 ) {
     const issueUrl = getJiraUrl(issueKey)
+    const statusIconHTML = statusIconBlock(statusIcon)
     return `
         <div class="TableObject gh-header-meta">
             <div class="TableObject-item">
@@ -111,7 +128,7 @@ function headerBlock(issueKey,
             </div>
             <div class="TableObject-item">
                 <span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">
-                    <img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>
+                    ${statusIconHTML}
                     ${statusName}
                 </span>
             </div>
