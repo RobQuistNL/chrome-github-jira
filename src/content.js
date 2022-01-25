@@ -32,8 +32,6 @@ let prTitleEnabled = true;
 
 const REFRESH_TIMEOUT = 250;
 
-let store = {};
-
 main().catch(err => console.error('Unexpected error', err))
 
 /////////////////////////////////
@@ -92,15 +90,45 @@ function buildLoadingElement(issueKey) {
     return el;
 }
 
+function statusIconBlock(statusIcon) {
+    if (!statusIcon) {
+        return ''
+    }
+
+    const origin = new URL(statusIcon).origin
+    const base = new URL(origin).href
+
+    // If the icon is the same as its origin, it most probably is not an image
+    if (statusIcon === origin || statusIcon === base) {
+        return ''
+    }
+
+    return `<img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>`
+}
+
+function statusCategoryColors(statusCategory) {
+    // There are only "blue", "green", and "grey" in Jira
+    switch (statusCategory.colorName) {
+        case "blue":
+            return { color: "white", background: "rgb(150, 198, 222)" }
+        case "green":
+            return { color: "white", background: "#28a745" }
+        default:
+            return { color: "rgb(40, 40, 40)", background: "rgb(220, 220, 220)" }
+    }
+}
+
 function headerBlock(issueKey,
     {
         assignee,
         reporter,
-        status: { iconUrl: statusIcon, name: statusName } = {},
+        status: { iconUrl: statusIcon, name: statusName, statusCategory } = {},
         summary
     } = {}
 ) {
     const issueUrl = getJiraUrl(issueKey)
+    const statusIconHTML = statusIconBlock(statusIcon)
+    const { color: statusColor, background: statusBackground } = statusCategoryColors(statusCategory);
     return `
         <div class="TableObject gh-header-meta">
             <div class="TableObject-item">
@@ -110,8 +138,8 @@ function headerBlock(issueKey,
                 </span>
             </div>
             <div class="TableObject-item">
-                <span class="State State--white" style="background-color: rgb(220, 220, 220);color:rgb(40,40,40);">
-                    <img height="16" class="octicon" width="12" aria-hidden="true" src="${statusIcon}"/>
+                <span class="State State--white" style="color: ${statusColor}; background: ${statusBackground}">
+                    ${statusIconHTML}
                     ${statusName}
                 </span>
             </div>
@@ -121,10 +149,10 @@ function headerBlock(issueKey,
                         ${issueKey} - ${summary}
                     </a>
                 </strong>
-                <p>
+                <div class="d-inline-block">
                     ${userHTMLContent('Reported by', reporter)}
                     ${userHTMLContent('and assigned to', assignee)}
-                </p>
+                </div>
             </div>
         </div>
     `
