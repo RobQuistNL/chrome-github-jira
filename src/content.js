@@ -267,7 +267,7 @@ function handleCommitsTitle() {
 }
 
 async function handlePrPage() {
-    const titleEl = document.querySelector('h1 > span.js-issue-title');
+    const titleEl = document.querySelector('h1 > .js-issue-title');
     const insertedJiraDataEl = document.querySelector('#insertedJiraData');
     const partialDiscussionHeaderEl = document.querySelector('#partial-discussion-header');
     if (!titleEl || insertedJiraDataEl) {
