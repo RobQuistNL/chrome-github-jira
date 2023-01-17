@@ -121,7 +121,7 @@ function handleCommitsTitle() {
 }
 
 function handlePrPage() {
-    let title = $("h1 > span.js-issue-title").html();
+    let title = $("h1 > .js-issue-title").html();
     if (title == undefined || $('#insertedJiraData').length > 0) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
@@ -136,7 +136,7 @@ function handlePrPage() {
     let ticketUrl = 'https://'+jiraUrl+'/browse/' + ticketNumber;
 
     //Replace title with clickable link to jira ticket
-    $("h1 > span.js-issue-title").html(
+    $("h1 > .js-issue-title").html(
         title.replace(
             /([A-Z]+-[0-9]+)/,
             '<a href="'+ticketUrl+'" target="_blank" alt="Ticket in Jira">'+ticketNumber+'</a>'

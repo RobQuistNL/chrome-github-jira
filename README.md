@@ -18,6 +18,9 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
+#### 1.2.3
+- Fix title selection in Github page (fixes #47)
+
 #### 1.2.2
 - Assignee is now optional, doesn't show when unassigned
 - Page jumps around a bit less when loading ticket information
