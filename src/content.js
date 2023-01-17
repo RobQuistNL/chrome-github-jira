@@ -267,7 +267,7 @@ function handleCommitsTitle() {
 }
 
 async function handlePrPage() {
-    const titleEl = document.querySelector('h1 > span.js-issue-title');
+    const titleEl = document.querySelector('h1 > .js-issue-title');
     const insertedJiraDataEl = document.querySelector('#insertedJiraData');
     const partialDiscussionHeaderEl = document.querySelector('#partial-discussion-header');
     if (!titleEl || insertedJiraDataEl) {
@@ -284,7 +284,16 @@ async function handlePrPage() {
     }
 
     //Replace title with clickable link to jira ticket
+<<<<<<< HEAD
     titleEl.innerHTML = titleHTMLContent(title, ticketNumber);
+=======
+    $("h1 > .js-issue-title").html(
+        title.replace(
+            /([A-Z]+-[0-9]+)/,
+            '<a href="'+ticketUrl+'" target="_blank" alt="Ticket in Jira">'+ticketNumber+'</a>'
+        )
+    );
+>>>>>>> e326293b9d6a675ffe0a81c155e107f098abd2f2
 
     //Open up a handle for data
     const loadingElement = buildLoadingElement(ticketNumber);
