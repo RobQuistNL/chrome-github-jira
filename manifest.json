@@ -42,6 +42,10 @@
         "http://*.jira.com/"
     ],
 
+    "optional_permissions": [
+        "*://*/*"
+    ],
+
     "background": {
         "scripts": ["src/background.js"],
         "persistent": false
