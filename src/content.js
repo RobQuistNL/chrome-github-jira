@@ -1,6 +1,6 @@
 // The last time a refresh of the page was done
 let lastRefresh = (new Date()).getTime();
-let jiraLogo = chrome.extension.getURL("images/jira.png");
+let jiraLogo = chrome.runtime.getURL("images/jira.png");
 let jiraUrl = '';
 let acceptanceStartString = 'h3. Acceptance Criteria';
 let acceptanceEndString  = 'h3. Notes';
