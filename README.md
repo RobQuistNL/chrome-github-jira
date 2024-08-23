@@ -17,17 +17,24 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
-#### 1.3.0
+#### 1.4.0
 - [ ] Refactor code to es6
-    - Use `const` over `let` when preferred
-    - Use arrow functions for lambdas that do not require `this`
-    - Improve code reuse
-    - Reduce duplication
+  - Use `const` over `let` when preferred
+  - Use arrow functions for lambdas that do not require `this`
+  - Improve code reuse
+  - Reduce duplication
 - [ ] Improve templates
 - [x] Add editorconfig
 - [x] Add eslint and config
 - [ ] Filter by org
-  
+
+
+#### 1.3.0
+- Fix prefilled data being overwritten by plugin (thanks @blakegearin | fixes #49)
+- Upgrade manifest from v2 to v3 (thanks @HanJaeJoon)
+- Allow for custom URL's with optional permissions (thanks @exadeci | fixes #45)
+
+
 #### 1.2.3
 - Fix title selection in Github page (fixes #47)
 

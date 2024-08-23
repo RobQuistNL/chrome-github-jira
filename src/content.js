@@ -190,18 +190,30 @@ async function main(items) {
     try {
         const { name } = await sendMessage({ query: 'getSession', jiraUrl });
 
-        // Check page if content changed (for AJAX pages)
-        document.addEventListener('DOMNodeInserted', () => {
-            if ((new Date()).getTime() - lastRefresh >= REFRESH_TIMEOUT) {
-                lastRefresh = (new Date()).getTime();
-                checkPage();
-            }
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                // Check page if content changed (for AJAX pages)
+                if (mutation.type !== 'attributes') {
+                    return; // just skip
+                }
+
+                if ((new Date()).getTime() - lastRefresh >= REFRESH_TIMEOUT) {
+                    lastRefresh = (new Date()).getTime();
+                    checkPage();
+                }
+            });
         });
+
+        var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true };
+        var targetNode = document.body;
+
+        observer.observe(targetNode, observerConfig);
 
         // Check page initially
         checkPage();
     } catch(e) {
-        console.error(`You are not logged in to Jira at http://${jiraUrl} - Please login.`);
+        console.error(`You are not logged in to Jira at ${jiraUrl} - Please login.`);
+        console.error(e);
     }
 }
 
@@ -309,6 +321,10 @@ async function handlePrCreatePage() {
     }
 
     let body = document.querySelector('textarea#pull_request_body');
+    if (!body) {
+        return;
+    }
+
     if (body.getAttribute('jira-loading') === 'true') {
         return false; //Already loading
     }
