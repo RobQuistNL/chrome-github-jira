@@ -9,8 +9,7 @@
     "homepage_url": "https://github.com/RobQuistNL/chrome-github-jira",
 
     "options_ui": {
-        "page": "src/options.html",
-      "chrome_style": true
+        "page": "src/options.html"
     },
 
     "icons": {
@@ -23,9 +22,12 @@
 
     "web_accessible_resources": [
         {
-          "resources": [
-            "images/jira.png"
-          ]
+            "resources": [
+                "images/jira.png"
+            ],
+            "matches": [
+                "*://github.com/*"
+            ]
         }
     ],
 
