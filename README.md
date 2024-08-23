@@ -33,7 +33,8 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - Fix prefilled data being overwritten by plugin (thanks @blakegearin | fixes #49)
 - Upgrade manifest from v2 to v3 (thanks @HanJaeJoon)
 - Allow for custom URL's with optional permissions (thanks @exadeci | fixes #45)
-
+- Replaced deprecated DOM checks with proper listeners
+- Fixed potential undefined error in navigating pages
 
 #### 1.2.3
 - Fix title selection in Github page (fixes #47)
