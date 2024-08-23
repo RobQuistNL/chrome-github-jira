@@ -17,7 +17,7 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 
 ### Changelog
 
-#### 1.4.0
+#### 1.4.0 (in progress)
 - [ ] Refactor code to es6
   - Use `const` over `let` when preferred
   - Use arrow functions for lambdas that do not require `this`
