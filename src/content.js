@@ -61,7 +61,7 @@ function commitStreamEl(href, content) {
 
 function titleHTMLContent(title, issueKey) {
     return title.replace(/([A-Z0-9]+-[0-9]+)/, `
-        <a href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
+        <a id="jiraClickable" href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
     `);
 }
 
@@ -85,7 +85,6 @@ function userHTMLContent(text, user) {
 function buildLoadingElement(issueKey) {
     const el = document.createElement('div');
     el.id = 'insertedJiraData';
-    el.className = 'gh-header-meta';
     el.innerText = `Loading ticket ${issueKey}...`;
     return el;
 }
@@ -279,9 +278,9 @@ function handleCommitsTitle() {
 }
 
 async function handlePrPage() {
-    const titleEl = document.querySelector('h1 > .js-issue-title');
+    const titleEl = document.querySelector('h1 > span');
     const insertedJiraDataEl = document.querySelector('#insertedJiraData');
-    const partialDiscussionHeaderEl = document.querySelector('#partial-discussion-header');
+    const pageHeaderDescriptionEl = document.querySelector('[class^="prc-PageHeader-Description"]');
     if (!titleEl || insertedJiraDataEl) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
@@ -300,7 +299,7 @@ async function handlePrPage() {
 
     //Open up a handle for data
     const loadingElement = buildLoadingElement(ticketNumber);
-    partialDiscussionHeaderEl.appendChild(loadingElement);
+    pageHeaderDescriptionEl.appendChild(loadingElement);
 
     //Load up data from jira
     try {
