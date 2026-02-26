@@ -182,7 +182,7 @@ async function main(items) {
     );
 
     if (jiraUrl == '') {
-        console.error('GitHub Jira plugin could not load: Jira URL is not set.');
+        console.error('GitHub Jira plugin could not load: Jira URL is not set. Please set the correct Jira URL in the options page.');
         return;
     }
 
@@ -245,6 +245,7 @@ function onPageChange(page) {
 
 function checkPage() {
     let url = window.location.href;
+    console.log(url);
     if (url.match(GITHUB_PAGE_PULL) != null) {
         onPageChange(PAGE_PR)
     }
