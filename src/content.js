@@ -186,30 +186,14 @@ async function main(items) {
         return;
     }
 
-    //Check login
     try {
+        // Checks the login
         const { name } = await sendMessage({ query: 'getSession', jiraUrl });
 
-        var observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                // Check page if content changed (for AJAX pages)
-                if (mutation.type !== 'attributes') {
-                    return; // just skip
-                }
+        // Hook into the turbo render event, for subsequent navigation
+        document.addEventListener('turbo:render', checkPage, { passive: true });
 
-                if ((new Date()).getTime() - lastRefresh >= REFRESH_TIMEOUT) {
-                    lastRefresh = (new Date()).getTime();
-                    checkPage();
-                }
-            });
-        });
-
-        var observerConfig = { attributes: true, childList: true, characterData: true, subtree: true };
-        var targetNode = document.body;
-
-        observer.observe(targetNode, observerConfig);
-
-        // Check page initially
+        // Check page initially (on first load)
         checkPage();
     } catch(e) {
         console.error(`You are not logged in to Jira at ${jiraUrl} - Please login.`);
