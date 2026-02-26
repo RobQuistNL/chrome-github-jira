@@ -85,6 +85,7 @@ function userHTMLContent(text, user) {
 function buildLoadingElement(issueKey) {
     const el = document.createElement('div');
     el.id = 'insertedJiraData';
+    el.className = 'gh-header-meta';
     el.innerText = `Loading ticket ${issueKey}...`;
     return el;
 }
@@ -129,7 +130,7 @@ function headerBlock(issueKey,
     const statusIconHTML = statusIconBlock(statusIcon)
     const { color: statusColor, background: statusBackground } = statusCategoryColors(statusCategory);
     return `
-        <div class="TableObject gh-header-meta">
+        <div class="TableObject">
             <div class="TableObject-item">
                 <span class="State State--green" style="background-color: rgb(150, 198, 222);">
                     <img height="16" class="octicon" width="12" aria-hidden="true" src="${jiraLogo}"/>
