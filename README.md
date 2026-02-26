@@ -28,6 +28,10 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - [x] Add eslint and config
 - [ ] Filter by org
 
+#### 1.3.1
+- Fix Jira statusbar not loading (thanks @MaximBelov | fixes #56)
+- Removed changelog file (fine to keep in `README.md` for now :))
+
 
 #### 1.3.0
 - Fix prefilled data being overwritten by plugin (thanks @blakegearin | fixes #49)
