@@ -130,7 +130,7 @@ function headerBlock(issueKey,
     const statusIconHTML = statusIconBlock(statusIcon)
     const { color: statusColor, background: statusBackground } = statusCategoryColors(statusCategory);
     return `
-        <div class="TableObject gh-header-meta">
+        <div class="TableObject">
             <div class="TableObject-item">
                 <span class="State State--green" style="background-color: rgb(150, 198, 222);">
                     <img height="16" class="octicon" width="12" aria-hidden="true" src="${jiraLogo}"/>
@@ -279,9 +279,9 @@ function handleCommitsTitle() {
 }
 
 async function handlePrPage() {
-    const titleEl = document.querySelector('h1 > .js-issue-title');
+    const titleEl = document.querySelector('h1 > span.markdown-title');
     const insertedJiraDataEl = document.querySelector('#insertedJiraData');
-    const partialDiscussionHeaderEl = document.querySelector('#partial-discussion-header');
+    const pageHeaderDescriptionEl = document.querySelector('[class^="prc-PageHeader-Description"]');
     if (!titleEl || insertedJiraDataEl) {
         //If we didn't find a ticket, or the data is already inserted, cancel.
         return false;
@@ -300,7 +300,7 @@ async function handlePrPage() {
 
     //Open up a handle for data
     const loadingElement = buildLoadingElement(ticketNumber);
-    partialDiscussionHeaderEl.appendChild(loadingElement);
+    pageHeaderDescriptionEl.appendChild(loadingElement);
 
     //Load up data from jira
     try {
