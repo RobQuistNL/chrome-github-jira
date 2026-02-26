@@ -61,7 +61,7 @@ function commitStreamEl(href, content) {
 
 function titleHTMLContent(title, issueKey) {
     return title.replace(/([A-Z0-9]+-[0-9]+)/, `
-        <a id="jiraClickable" href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
+        <a href="${getJiraUrl(issueKey)}" target="_blank" alt="Ticket in Jira">${issueKey}</a>
     `);
 }
 
