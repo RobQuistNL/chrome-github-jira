@@ -279,7 +279,7 @@ function handleCommitsTitle() {
 }
 
 async function handlePrPage() {
-    const titleEl = document.querySelector('h1 > span');
+    const titleEl = document.querySelector('h1 > span.markdown-title');
     const insertedJiraDataEl = document.querySelector('#insertedJiraData');
     const pageHeaderDescriptionEl = document.querySelector('[class^="prc-PageHeader-Description"]');
     if (!titleEl || insertedJiraDataEl) {
