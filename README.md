@@ -28,12 +28,14 @@ Install from here: https://chrome.google.com/webstore/detail/github-jira-integra
 - [x] Add eslint and config
 - [ ] Filter by org
 
+#### 1.3.2
+- Remove stray console.log
+
 #### 1.3.1
 - Fix Jira statusbar not loading (thanks @MaximBelov | fixes #56)
 - Fix event listener not properly working on subsequent page navigation (fixes #58)
 - Jira integration now works on Conversation, Commits and Files changes tabs (fixes #55)
 - Removed changelog file (fine to keep in `README.md` for now :))
-
 
 #### 1.3.0
 - Fix prefilled data being overwritten by plugin (thanks @blakegearin | fixes #49)
