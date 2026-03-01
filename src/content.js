@@ -229,7 +229,6 @@ function onPageChange(page) {
 
 function checkPage() {
     let url = window.location.href;
-    console.log(url);
     if (url.match(GITHUB_PAGE_PULL) != null) {
         onPageChange(PAGE_PR)
     }
